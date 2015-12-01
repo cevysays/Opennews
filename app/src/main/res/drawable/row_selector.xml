@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--<item android:drawable="@drawable/selected_gray" android:state_selected="true" />-->
+    <!--<item android:drawable="@drawable/pressed_gray" android:state_pressed="true" />-->
+    <item android:state_pressed="true">
+        <shape>
+            <solid android:color="@color/colorHighlight"></solid>
+        </shape>
+    </item>
+    <item>
+        <shape>
+            <solid android:color="@color/white"></solid>
+        </shape>
+    </item>
+</selector>

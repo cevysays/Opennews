@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="category">
+        <item>Pilih Kategori</item>
+        <item>Berita</item>
+        <item>Agenda</item>
+    </string-array>
+</resources>

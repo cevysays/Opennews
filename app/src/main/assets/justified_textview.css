@@ -1,0 +1,21 @@
+body {
+    font-size: 0.8em;
+    color: rgb(0,0,0);
+    text-align: justify;
+    /* background: rgba(217, 217, 217, 1.0);  you can set your background here,
+                                              it's kind of fix for older versions of Android OS */
+}
+
+@media screen and (-webkit-device-pixel-ratio: 1.5) {
+    /* CSS for high-density screens */
+    body {
+        font-size: 0.8em;
+    }
+}
+
+@media screen and (-webkit-device-pixel-ratio: 2.0) {
+    /* CSS for extra high-density screens */
+    body {
+        font-size: 0.8em;
+    }
+}

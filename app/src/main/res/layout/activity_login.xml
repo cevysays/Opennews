@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/myPrimaryColor"
+    android:orientation="vertical"
+    tools:context=".LoginActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            android:src="@drawable/icon_opennews" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:paddingBottom="10dp"
+        android:paddingLeft="60dp"
+        android:paddingRight="60dp">
+
+        <!-- email label -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="Alamat e-mail"
+            android:textColor="#ffff"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/txtUserEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="contoh@contoh.com"
+            android:inputType="textEmailAddress"
+            android:singleLine="true"
+            android:textColor="@color/white"
+            android:textColorHint="@color/myPrimaryDarkColor"/>
+
+        <!-- password label -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="Kata sandi"
+            android:textColor="#ffff"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/txtUserPwd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:inputType="textPassword"
+            android:hint="kata sandi"
+            android:textColor="@color/white"
+            android:textColorHint="@color/myPrimaryDarkColor"/>
+
+        <Button
+            android:id="@+id/login_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/row_selector"
+            android:onClick="loginUser"
+            android:clickable="true"
+            android:text="Masuk"
+            android:textColor="#1a237e" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/forgot_password"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:autoLink="web"
+                android:autoText="false"
+                android:gravity="center_vertical"
+                android:text="Lupa kata sandi? kirim email"
+                android:textAlignment="center"
+                android:textColor="#ffff" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+</LinearLayout>

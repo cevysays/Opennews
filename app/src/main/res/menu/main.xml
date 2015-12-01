@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.openetizen.cevysays.opennews.activity.PostingActivity">
+    <!--<item-->
+    <!--android:id="@+id/action_settings"-->
+    <!--android:orderInCategory="100"-->
+    <!--android:title="@string/action_settings"-->
+    <!--app:showAsAction="never" />-->
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/ic_settings_applications_white_36dp"
+        android:title="@string/action_settings"
+        app:showAsAction="ifRoom"/>
+</menu>
