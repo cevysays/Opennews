@@ -27,6 +27,7 @@ public class CategoryOneItem implements Parcelable {
         this.username = username;
         this.content = content;
         this.category_cd = category_cd;
+        this.article_id = article_id;
     }
 
     private CategoryOneItem(Parcel in) {

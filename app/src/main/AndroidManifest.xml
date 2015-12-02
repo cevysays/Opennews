@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.openetizen.cevysays.opennews" >
+    package="com.openetizen.cevysays.opennews">
 
     <!-- &lt;!&ndash; To access Google+ APIs: &ndash;&gt; -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -13,7 +13,8 @@
          Google Maps Android API v2, but you must specify either coarse or fine
          location permissions for the 'MyLocation' functionality. 
     -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- &lt;!&ndash; -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- &lt;!&ndash; -->
     <!-- To retrieve OAuth 2.0 tokens or invalidate tokens to disconnect a user. This disconnect -->
     <!-- option is required to comply with the Google+ Sign-In developer policies -->
     <!-- &ndash;&gt; -->
@@ -22,12 +23,12 @@
     <!-- <uses-permission android:name="android.permission.READ_PROFILE" /> -->
     <!-- <uses-permission android:name="android.permission.READ_CONTACTS" /> -->
     <application
+        android:name="android.support.multidex.MultiDexApplication"
         android:allowBackup="true"
         android:icon="@drawable/icon_opennews"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:name="android.support.multidex.MultiDexApplication">
-        <activity android:name=".activity.SplashScreen" >
+        android:theme="@style/AppTheme">
+        <activity android:name=".activity.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -39,7 +40,7 @@
             android:label="@string/app_name" />
         <activity
             android:name=".activity.LoginActivity"
-            android:label="@string/title_activity_login" >
+            android:label="@string/title_activity_login">
 
             <!-- android:windowSoftInputMode="adjustResize|stateHidden" > -->
         </activity>
@@ -67,14 +68,13 @@
             android:theme="@style/AppThemes" />
         <activity
             android:name=".activity.DetailsGalleryActivity"
-            android:theme="@style/Transparent" />
+            android:theme="@style/AppThemes" />
         <activity
             android:name=".activity.UploadPhotoActivity"
             android:label="Unggah Foto" />
         <activity
             android:name=".activity.SettingsActivity"
-            android:label="@string/title_activity_settings" >
-        </activity>
+            android:label="@string/title_activity_settings"></activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -86,12 +86,12 @@
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="@string/google_maps_key" />
-        <uses-library android:name="com.google.android.maps"/>
+        <uses-library android:name="com.google.android.maps"
+            android:required="false"/>
 
         <activity
             android:name=".activity.MapsActivity"
-            android:label="@string/title_activity_maps" >
-        </activity>
+            android:label="@string/title_activity_maps"></activity>
     </application>
 
 </manifest>

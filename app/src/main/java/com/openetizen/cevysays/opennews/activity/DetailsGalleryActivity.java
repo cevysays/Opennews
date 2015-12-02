@@ -2,9 +2,11 @@ package com.openetizen.cevysays.opennews.activity;
 
 import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
@@ -39,6 +41,7 @@ public class DetailsGalleryActivity extends ActionBarActivity {
     private int thumbnailWidth;
     private int thumbnailHeight;
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +49,8 @@ public class DetailsGalleryActivity extends ActionBarActivity {
         //Setting details screen layout
         setContentView(R.layout.activity_details_gallery);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.hide();
 
         //retrieves the thumbnail data
         Bundle bundle = getIntent().getExtras();
@@ -65,6 +69,11 @@ public class DetailsGalleryActivity extends ActionBarActivity {
         //Set image url
         imageView = (ImageView) findViewById(R.id.grid_item_image);
         Picasso.with(this).load(image).into(imageView);
+
+        //Set the background color to black
+        frameLayout = (FrameLayout) findViewById(R.id.main_background);
+        colorDrawable = new ColorDrawable(Color.BLACK);
+        frameLayout.setBackground(colorDrawable);
 
         // Only run the animation if we're coming from the parent activity, not if
         // we're recreated automatically by the window manager (e.g., device rotation)
@@ -132,6 +141,7 @@ public class DetailsGalleryActivity extends ActionBarActivity {
      * @param endAction This action gets run after the animation completes (this is
      *                  when we actually switch activities)
      */
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public void exitAnimation(final Runnable endAction) {
 
         TimeInterpolator sInterpolator = new AccelerateInterpolator();
