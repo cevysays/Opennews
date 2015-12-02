@@ -1,0 +1,21 @@
+<resources>
+    <!--
+    TODO: Before you run your application, you need a Google Maps API key.
+
+    To get one, follow this link, follow the directions and press "Create" at the end:
+
+    https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=D5:33:E0:C5:D3:0F:22:4F:C1:E9:FB:B2:F1:02:D5:98:64:26:35:A6%3Bcom.openetizen.cevysays.opennews.activity
+
+    You can also add your credentials to an existing key, using this line:
+    D5:33:E0:C5:D3:0F:22:4F:C1:E9:FB:B2:F1:02:D5:98:64:26:35:A6;com.openetizen.cevysays.opennews.activity
+
+    Alternatively, follow the directions here:
+    https://developers.google.com/maps/documentation/android/start#get-key
+
+    Once you have your key (it starts with "AIza"), replace the "google_maps_key"
+    string in this file.
+    -->
+    <string name="google_maps_key" translatable="false" templateMergeStrategy="preserve">
+        YOUR_KEY_HERE
+    </string>
+</resources>
