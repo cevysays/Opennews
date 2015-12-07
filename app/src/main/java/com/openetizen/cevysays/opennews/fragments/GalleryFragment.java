@@ -184,10 +184,14 @@ public class GalleryFragment extends Fragment {
                 item.setTitle(title);
 
 //                JSONObject picture = posts.optJSONObject(i).optJSONObject("picture").optJSONObject("image").optJSONObject("url");
-//                JSONObject picture = posts.getJSONObject(i).getJSONObject("cover").getJSONObject("photo");
-//                String image = picture.getString("url");
-//                item.setImage(image);
+                JSONArray picture = response.optJSONArray("album");
+                JSONObject images = picture.getJSONObject(i);
+                String image = images.getJSONObject("cover").getJSONObject("photo").getJSONObject("thumb").getString("url");
+                Log.d("cover", images.getJSONObject("cover").getJSONObject("photo").getJSONObject("thumb").getString("url"));
+                item.setImage("http://openetizen.com" + image.toString());
+                Log.d("foto", image.toString());
 
+//
 //                JSONArray attachments = post.getJSONArray("attachments");
 //                if (null != attachments && attachments.length() > 0) {
 //                    JSONObject attachment = attachments.getJSONObject(0);

@@ -143,7 +143,6 @@ public class MainActivity extends ActionBarActivity
 
     }
 
-
     public void loginButton (View view){
 //        new MaterialDialog.Builder(this)
 //                .title(R.string.title_dialog)
@@ -171,11 +170,6 @@ public class MainActivity extends ActionBarActivity
         });
         builder.show();
 
-    }
-
-    public  void logoutButton (View view){
-        Intent i = new Intent(MainActivity.this, MainActivity.class);
-        startActivity(i);
     }
 
 
