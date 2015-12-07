@@ -7,7 +7,7 @@ import android.os.Parcelable;
  * Created by Cevy Yufindra on 09/06/2015.
  */
 public class CategoryOneItem implements Parcelable {
-    public static final String API = "http://openetizen.com/opennews.json";
+    public static final String API = "http://openetizen.com/api/v1/articles";
 
     private String article_id;
     private String username;
@@ -20,7 +20,7 @@ public class CategoryOneItem implements Parcelable {
     private String updated_at;
     private String image;
 
-    public CategoryOneItem(String image, String title, String created_at, String username, String content, String category_cd) {
+    public CategoryOneItem(String image, String title, String created_at, String username, String content, String category_cd, String article_id) {
         this.image = image;
         this.title = title;
         this.created_at = created_at;

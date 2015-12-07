@@ -47,6 +47,7 @@ public class AgendaFragment extends Fragment implements AdapterView.OnItemClickL
     private ArrayList<String> username = new ArrayList<String>();
     private ArrayList<String> content = new ArrayList<String>();
     private ArrayList<String> category_cd = new ArrayList<String>();
+    private ArrayList<String> article_id = new ArrayList<String>();
     public static final String MyPREFERENCES = "MyPrefs";
     static SharedPreferences sharedpreferences;
     private WaveSwipeRefreshLayout mWaveSwipeRefreshLayout;
@@ -104,11 +105,12 @@ public class AgendaFragment extends Fragment implements AdapterView.OnItemClickL
         loadArray("username", username);
         loadArray("category_cd", category_cd);
         loadArray("content", content);
+        loadArray("article_id", article_id);
 
 
         for (int i = 0; i < image.size(); i++) {
             if (category_cd.get(i).contains("CATE_TP_2")) {
-                dataCatOne.add(new CategoryOneItem(image.get(i), title.get(i), created_at.get(i), username.get(i), content.get(i), category_cd.get(i)));
+                dataCatOne.add(new CategoryOneItem(image.get(i), title.get(i), created_at.get(i), username.get(i), content.get(i), category_cd.get(i), article_id.get(i)));
             }
         }
 

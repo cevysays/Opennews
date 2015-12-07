@@ -1,5 +1,6 @@
 package com.openetizen.cevysays.opennews.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
@@ -8,6 +9,7 @@ import android.os.Build;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -65,6 +67,26 @@ public class PostingActivity extends ActionBarActivity implements AdapterView.On
 // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
+
+        /*Dialog*/
+//        AlertDialog.Builder builder =
+//                new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
+//        builder.setTitle(R.string.title_dialog_discard);
+////        builder.setMessage(R.string.content_dialog);
+//        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialogInterface, int i) {
+//                Intent intent = new Intent(PostingActivity.this, MainActivity.class);
+//                startActivity(intent);
+//            }
+//        });
+//        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialogInterface, int i) {
+//
+//            }
+//        });
+//        builder.show();
 
     }
 

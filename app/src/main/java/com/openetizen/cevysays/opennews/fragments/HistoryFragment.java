@@ -274,8 +274,8 @@ public class HistoryFragment extends Fragment {
             TextView tv_name;
 
             public ViewHolder(View view) {
-                iv_icon = (ImageView) view.findViewById(R.id.iv_icon);
-                tv_name = (TextView) view.findViewById(R.id.tv_name);
+                iv_icon = (ImageView) view.findViewById(R.id.thumbImage);
+                tv_name = (TextView) view.findViewById(R.id.title);
                 view.setTag(this);
             }
         }

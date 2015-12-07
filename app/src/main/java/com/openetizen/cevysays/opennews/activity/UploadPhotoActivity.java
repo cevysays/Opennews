@@ -36,7 +36,6 @@ public class UploadPhotoActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
 
         Window window = getWindow();
 

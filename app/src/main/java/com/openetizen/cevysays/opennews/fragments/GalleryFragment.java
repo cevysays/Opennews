@@ -50,7 +50,7 @@ public class GalleryFragment extends Fragment {
 
     private GridViewAdapter mGridAdapter;
     private ArrayList<GridItem> mGridData;
-    private String FEED_URL = "http://javatechig.com/?json=get_recent_posts&count=45";
+    private String FEED_URL = "http://openetizen.com/api/v1/albums";
 
 
     public GalleryFragment() {
@@ -175,19 +175,25 @@ public class GalleryFragment extends Fragment {
     private void parseResult(String result) {
         try {
             JSONObject response = new JSONObject(result);
-            JSONArray posts = response.optJSONArray("posts");
+            JSONArray posts = response.optJSONArray("album");
             GridItem item;
             for (int i = 0; i < posts.length(); i++) {
                 JSONObject post = posts.optJSONObject(i);
-                String title = post.optString("title");
+                String title = post.optString("name");
                 item = new GridItem();
                 item.setTitle(title);
-                JSONArray attachments = post.getJSONArray("attachments");
-                if (null != attachments && attachments.length() > 0) {
-                    JSONObject attachment = attachments.getJSONObject(0);
-                    if (attachment != null)
-                        item.setImage(attachment.getString("url"));
-                }
+
+//                JSONObject picture = posts.optJSONObject(i).optJSONObject("picture").optJSONObject("image").optJSONObject("url");
+//                JSONObject picture = posts.getJSONObject(i).getJSONObject("cover").getJSONObject("photo");
+//                String image = picture.getString("url");
+//                item.setImage(image);
+
+//                JSONArray attachments = post.getJSONArray("attachments");
+//                if (null != attachments && attachments.length() > 0) {
+//                    JSONObject attachment = attachments.getJSONObject(0);
+//                    if (attachment != null)
+//                        item.setImage(attachment.getString("url"));
+//                }
                 mGridData.add(item);
             }
         } catch (JSONException e) {
