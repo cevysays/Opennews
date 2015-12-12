@@ -20,7 +20,7 @@ public class CategoryOneItem implements Parcelable {
     private String updated_at;
     private String image;
 
-    public CategoryOneItem(String image, String title, String created_at, String username, String content, String category_cd, String article_id) {
+    public CategoryOneItem(String image, String title, String created_at, String username, String content, String category_cd, String article_id, String user_id) {
         this.image = image;
         this.title = title;
         this.created_at = created_at;
@@ -28,6 +28,7 @@ public class CategoryOneItem implements Parcelable {
         this.content = content;
         this.category_cd = category_cd;
         this.article_id = article_id;
+        this.user_id = user_id;
     }
 
     private CategoryOneItem(Parcel in) {

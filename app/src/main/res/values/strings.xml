@@ -29,6 +29,7 @@
     <!--Fragment-->
     <string name="title_news">Berita Terkini</string>
     <string name="title_agenda">Agenda Terkini</string>
+    <string name="title_promotion">Promosi</string>
     <string name="title_gallery">Galeri</string>
     <string name="title_document">Dokumen</string>
     <string name="title_history">Histori Artikel</string>

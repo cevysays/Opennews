@@ -1,7 +1,10 @@
 package com.openetizen.cevysays.opennews.activity;
 
+import android.support.v4.app.Fragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -11,12 +14,15 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.openetizen.cevysays.opennews.fragments.PromotionFragment;
 import com.openetizen.cevysays.opennews.util.Utils;
 import com.openetizen.cevysays.opennews.fragments.AgendaFragment;
 import com.openetizen.cevysays.opennews.fragments.CategoryOneFragment;
@@ -27,6 +33,8 @@ import com.openetizen.cevysays.opennews.util.NavigationDrawerCallbacks;
 import com.openetizen.cevysays.opennews.R;
 import com.openetizen.cevysays.opennews.fragments.NavigationDrawerFragment;
 import com.parse.Parse;
+
+import java.util.HashMap;
 
 
 public class MainActivity extends ActionBarActivity
@@ -44,20 +52,23 @@ public class MainActivity extends ActionBarActivity
 
     Bundle bundle = new Bundle();
 
+    private SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         bundle = getIntent().getExtras();
-        /*try{*/
-        if (bundle == null) {
-            setContentView(R.layout.activity_main);
-        } else {
+
+
+        sharedPreferences = getSharedPreferences(LoginActivity.MyPREFERENCES, MODE_PRIVATE);
+
+        if (sharedPreferences.getBoolean("login", false)) {
             setContentView(R.layout.activity_main_activity_user);
+        } else {
+            setContentView(R.layout.activity_main);
+
         }
-//        }catch (NullPointerException e){
-//            setContentView(R.layout.activity_main);
-//        }
 
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar_actionbar);
@@ -104,16 +115,20 @@ public class MainActivity extends ActionBarActivity
         });
 
 
-        if (bundle != null) {
+        if (sharedPreferences.getBoolean("login", false)) {
+            // user login
             mNavigationDrawerFragmentUser = (NavigationDrawerFragmentUser)
                     getFragmentManager().findFragmentById(R.id.fragment_drawer_user);
             mNavigationDrawerFragmentUser.setup(R.id.fragment_drawer_user, (DrawerLayout) findViewById(R.id.drawer), mToolbar);
-            mNavigationDrawerFragmentUser.setUserData(bundle.getString("login_name"), "", BitmapFactory.decodeResource(getResources(), R.drawable.ic_person_black_18dp));
+            mNavigationDrawerFragmentUser.setUserData(sharedPreferences.getString("loginName", ""), sharedPreferences.getString("loginEmail", ""), BitmapFactory.decodeResource(getResources(), R.drawable.ic_person_black_18dp));
+
         } else {
+            // user dereng login
             mNavigationDrawerFragment = (NavigationDrawerFragment)
                     getFragmentManager().findFragmentById(R.id.fragment_drawer);
             mNavigationDrawerFragment.setup(R.id.fragment_drawer, (DrawerLayout) findViewById(R.id.drawer), mToolbar);
             mNavigationDrawerFragment.setUserData(BitmapFactory.decodeResource(getResources(), R.drawable.login), BitmapFactory.decodeResource(getResources(), R.drawable.googleplus), BitmapFactory.decodeResource(getResources(), R.drawable.facebook));
+
         }
 
 //        ParseUser currentUser = ParseUser.getCurrentUser();
@@ -140,10 +155,9 @@ public class MainActivity extends ActionBarActivity
         //End Floating Button
 
 
-
     }
 
-    public void loginButton (View view){
+    public void loginButton(View view) {
 //        new MaterialDialog.Builder(this)
 //                .title(R.string.title_dialog)
 //                .content(R.string.content_dialog)
@@ -173,7 +187,6 @@ public class MainActivity extends ActionBarActivity
     }
 
 
-
     @Override
 
     public void onNavigationDrawerItemSelected(int position) {
@@ -196,12 +209,18 @@ public class MainActivity extends ActionBarActivity
 
                 break;
             case 2:
+                transaction.replace(R.id.container, new PromotionFragment());
+                transaction.setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                transaction.commit();
+                getSupportActionBar().setTitle(R.string.title_promotion);
+                break;
+            case 3:
                 transaction.replace(R.id.container, new GalleryFragment());
                 transaction.setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.commit();
                 getSupportActionBar().setTitle(R.string.title_gallery);
                 break;
-            case 3:
+            case 4:
                 transaction.replace(R.id.container, new HistoryFragment());
                 transaction.setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.commit();
@@ -223,9 +242,20 @@ public class MainActivity extends ActionBarActivity
         startActivity(i);
     }
 
+    public void logoutButton(View view) {
+        SharedPreferences sharedpreferences = getSharedPreferences(LoginActivity.MyPREFERENCES, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putBoolean("login", false);
+        editor.clear();
+        editor.commit();
+        Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);
+    }
+
     @Override
+
     public void onBackPressed() {
-        if (bundle == null) {
+        if (!sharedPreferences.getBoolean("login", false)) {
             if (mNavigationDrawerFragment.isDrawerOpen())
                 mNavigationDrawerFragment.closeDrawer();
             else
@@ -241,7 +271,7 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (bundle == null) {
+        if (!sharedPreferences.getBoolean("login", false)) {
             if (!mNavigationDrawerFragment.isDrawerOpen()) {
                 // Only show items in the action bar relevant to this screen
                 // if the drawer is not showing. Otherwise, let the drawer
@@ -297,6 +327,17 @@ public class MainActivity extends ActionBarActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void replaceFragments(Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        android.support.v4.app.FragmentTransaction transaction
+                = fragmentManager.beginTransaction();
+        transaction.replace(R.id.container, fragment);
+        transaction.setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        transaction.commit();
+        getSupportActionBar().setTitle("Photo");
+
     }
 }
 

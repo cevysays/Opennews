@@ -1,7 +1,9 @@
 package com.openetizen.cevysays.opennews.activity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Message;
@@ -47,6 +49,11 @@ public class LoginActivity extends ActionBarActivity {
     EditText emailUser;
     // Passwprd Edit View Object
     EditText pwdUser;
+
+    public static final String MyPREFERENCES = "MyPrefs";
+    //    public static final String Email = "emailKey";
+//    public static final String Password = "passwordKey";
+    SharedPreferences sharedpreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +125,8 @@ public class LoginActivity extends ActionBarActivity {
         prgDialog.setMessage("Mohon menunggu...");
         // Set Cancelable as False
         prgDialog.setCancelable(false);
+
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
 
 
     }
@@ -210,11 +219,20 @@ public class LoginActivity extends ActionBarActivity {
                     if (obj.getString("status").equalsIgnoreCase("success")) {
                         Toast.makeText(getApplicationContext(), "Selamat datang!", Toast.LENGTH_LONG).show();
 //                        navigatetoMainActivity();
+                        SharedPreferences.Editor editor = sharedpreferences.edit();
+                        editor.putBoolean("login", true);
+                        Log.e("Response", new String(responseBody));
+                        editor.putString("loginName", obj.getJSONObject("data").getJSONObject("user").getString("email")); //nanti diganti "name" nek backend nya udah siap
+                        editor.putString("loginEmail",obj.getJSONObject("data").getJSONObject("user").getString("email"));
+                        editor.putString("loginPass", pwdUser.getText().toString());
+                        editor.putInt("loginUserID",obj.getJSONObject("data").getJSONObject("user").getInt("id"));
+                        editor.commit();
+
                         Intent i = new Intent(LoginActivity.this, MainActivity.class);
-                    i.putExtra("login_name",emailUser.getText().toString());
-                            startActivity(i);
-                    }
-                    else {
+                        i.putExtra("login_name", emailUser.getText().toString());
+                        startActivity(i);
+                        finish();
+                    } else {
                         errorMsg.setText(obj.getString("error_msg"));
                         Toast.makeText(getApplicationContext(), obj.getString("error_msg"), Toast.LENGTH_LONG).show();
                     }

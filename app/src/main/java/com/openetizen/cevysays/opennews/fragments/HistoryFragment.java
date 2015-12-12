@@ -1,7 +1,10 @@
 package com.openetizen.cevysays.opennews.fragments;
 
+import android.app.ProgressDialog;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.ResolveInfo;
 import android.database.DataSetObserver;
@@ -10,6 +13,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,15 +28,44 @@ import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.openetizen.cevysays.opennews.R;
+import com.openetizen.cevysays.opennews.activity.DetailPostActivity;
+import com.openetizen.cevysays.opennews.activity.MainActivity;
+import com.openetizen.cevysays.opennews.activity.PostingActivity;
+import com.openetizen.cevysays.opennews.adapters.CategoryOneAdapter;
+import com.openetizen.cevysays.opennews.adapters.HistoryAdapter;
+import com.openetizen.cevysays.opennews.models.CategoryOneItem;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
 
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.entity.StringEntity;
+
 public class HistoryFragment extends Fragment {
-    private List<ApplicationInfo> mAppList;
-    private AppAdapter mAdapter;
+    private ArrayList<CategoryOneItem> dataCatOne = new ArrayList<>();
+    private ArrayList<String> image = new ArrayList<String>();
+    private ArrayList<String> title = new ArrayList<String>();
+    private ArrayList<String> created_at = new ArrayList<String>();
+    private ArrayList<String> username = new ArrayList<String>();
+    private ArrayList<String> content = new ArrayList<String>();
+    private ArrayList<String> category_cd = new ArrayList<String>();
+    private ArrayList<String> article_id = new ArrayList<String>();
+    private ArrayList<String> user_id = new ArrayList<String>();
+    public static final String MyPREFERENCES = "MyPrefs";
+    static SharedPreferences sharedpreferences;
+
+    private HistoryAdapter mAdapter;
     private SwipeMenuListView mListView;
     private View rootView;
+
+    private ProgressDialog prgDialog;
 
     public HistoryFragment() {
         // Required empty public constructor
@@ -43,11 +76,33 @@ public class HistoryFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_history, container, false);
-        mAppList = getActivity().getPackageManager().getInstalledApplications(0);
+        sharedpreferences = getActivity().getSharedPreferences(MyPREFERENCES,
+                Context.MODE_PRIVATE);
+        loadArray("image", image);
+        loadArray("title", title);
+        loadArray("created_at", created_at);
+        loadArray("username", username);
+        loadArray("category_cd", category_cd);
+        loadArray("content", content);
+        loadArray("article_id", article_id);
+        loadArray("user_id", user_id);
+
+        prgDialog = new ProgressDialog(getActivity());
+        // Set Progress Dialog Text
+        prgDialog.setMessage("Mohon menunggu...");
+        // Set Cancelable as False
+        prgDialog.setCancelable(false);
+
+
+        for (int i = 0; i < image.size(); i++) {
+            if (user_id.get(i).equals(String.valueOf(sharedpreferences.getInt("loginUserID", 0)))) {
+                dataCatOne.add(new CategoryOneItem(image.get(i), title.get(i), created_at.get(i), username.get(i), content.get(i), category_cd.get(i), article_id.get(i), user_id.get(i)));
+            }
+        }
+
+        mAdapter = new HistoryAdapter(dataCatOne, getActivity());
 
         mListView = (SwipeMenuListView) rootView.findViewById(R.id.listView);
-
-        mAdapter = new AppAdapter();
         mListView.setAdapter(mAdapter);
 
         // step 1. create a MenuCreator
@@ -64,7 +119,7 @@ public class HistoryFragment extends Fragment {
                 // set item width
                 openItem.setWidth(dp2px(90));
                 // set item title
-                openItem.setTitle("Open");
+                openItem.setTitle("Edit");
                 // set item title fontsize
                 openItem.setTitleSize(18);
                 // set item title font color
@@ -81,7 +136,7 @@ public class HistoryFragment extends Fragment {
                 // set item width
                 deleteItem.setWidth(dp2px(90));
                 // set a icon
-                deleteItem.setIcon(R.drawable.ic_send_black_18dp);
+                deleteItem.setIcon(R.drawable.ic_delete);
                 // add to menu
                 menu.addMenuItem(deleteItem);
             }
@@ -92,16 +147,16 @@ public class HistoryFragment extends Fragment {
         mListView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
-                ApplicationInfo item = mAppList.get(position);
+                CategoryOneItem item = dataCatOne.get(position);
                 switch (index) {
                     case 0:
                         // open
-                        open(item);
+                        //open(item);
                         break;
                     case 1:
                         // delete
-//					delete(item);
-                        mAppList.remove(position);
+                        delete(Integer.parseInt(item.getArticle_id()));
+                        dataCatOne.remove(position);
                         mAdapter.notifyDataSetChanged();
                         break;
                 }
@@ -138,263 +193,90 @@ public class HistoryFragment extends Fragment {
 //		listView.setCloseInterpolator(new BounceInterpolator());
 
         // test item long click
-        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view,
-                                           int position, long id) {
-                Toast.makeText(getActivity().getApplicationContext(), position + " long click", Toast.LENGTH_SHORT).show();
-                return false;
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(HistoryFragment.this.getActivity(), DetailPostActivity.class);
+                intent.putExtra("post", dataCatOne.get(i));
+                startActivity(intent);
             }
         });
         return rootView;
 
     }
 
-    private void delete(ApplicationInfo item) {
-        // delete app
+    private void delete(int article_ID) {
+
+        prgDialog.show();
+
+        JSONObject jsonPosting = new JSONObject();
         try {
-            Intent intent = new Intent(Intent.ACTION_DELETE);
-            intent.setData(Uri.fromParts("package", item.packageName, null));
-            startActivity(intent);
-        } catch (Exception e) {
+            jsonPosting.put("article_id",article_ID);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+
+        StringEntity entity = null;
+        try {
+            entity = new StringEntity(jsonPosting.toString());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.delete(getActivity(), "http://openetizen.com/api/v1/articles/" + article_ID, entity, "application/json", new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject jsonObject) {
+                // Hide Progress Dialog
+                prgDialog.hide();
+
+                try {
+                    JSONObject obj = new JSONObject(new String(String.valueOf(jsonObject)));
+                    Log.d("Opo", String.valueOf(jsonObject));
+
+
+                } catch (JSONException e) {
+                    // TODO Auto-generated catch block
+                    Toast.makeText(getActivity().getApplicationContext(), "Error Occured [Server's JSON response might be invalid]!", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                    Log.e("ERROR", "Response");
+
+
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                // Hide Progress Dialog
+
+                Log.e("errorResponse", errorResponse.toString() + "  " + statusCode);
+
+                prgDialog.hide();
+                // When Http response code is '404'
+                if (statusCode == 404) {
+                    Toast.makeText(getActivity().getApplicationContext(), "Requested resource not found", Toast.LENGTH_LONG).show();
+                }
+                // When Http response code is '500'
+                else if (statusCode == 500) {
+                    Toast.makeText(getActivity().getApplicationContext(), "Something went wrong at server end", Toast.LENGTH_LONG).show();
+                }
+                // When Http response code other than 404, 500
+                else {
+                    Toast.makeText(getActivity().getApplicationContext(), "Posting failed", Toast.LENGTH_LONG).show();
+                    // Toast.makeText(getApplicationContext(), "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
+                }
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+            }
+
+        });
     }
 
-    private void open(ApplicationInfo item) {
+    private void open(CategoryOneItem item) {
         // open app
-        Intent resolveIntent = new Intent(Intent.ACTION_MAIN, null);
-        resolveIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-        resolveIntent.setPackage(item.packageName);
-        List<ResolveInfo> resolveInfoList = getActivity().getPackageManager()
-                .queryIntentActivities(resolveIntent, 0);
-        if (resolveInfoList != null && resolveInfoList.size() > 0) {
-            ResolveInfo resolveInfo = resolveInfoList.get(0);
-            String activityPackageName = resolveInfo.activityInfo.packageName;
-            String className = resolveInfo.activityInfo.name;
 
-            Intent intent = new Intent(Intent.ACTION_MAIN);
-            intent.addCategory(Intent.CATEGORY_LAUNCHER);
-            ComponentName componentName = new ComponentName(
-                    activityPackageName, className);
-
-            intent.setComponent(componentName);
-            startActivity(intent);
-        }
     }
 
-        class AppAdapter implements ListAdapter {
-
-        @Override
-        public void registerDataSetObserver(DataSetObserver dataSetObserver) {
-
-        }
-
-        @Override
-        public void unregisterDataSetObserver(DataSetObserver dataSetObserver) {
-
-        }
-
-        @Override
-        public int getCount() {
-            return mAppList.size();
-        }
-
-        @Override
-        public ApplicationInfo getItem(int position) {
-            return mAppList.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public boolean hasStableIds() {
-            return false;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                convertView = View.inflate(getActivity().getApplicationContext(),
-                        R.layout.item_history, null);
-                new ViewHolder(convertView);
-            }
-            ViewHolder holder = (ViewHolder) convertView.getTag();
-            ApplicationInfo item = getItem(position);
-            holder.iv_icon.setImageDrawable(item.loadIcon(getActivity().getPackageManager()));
-            holder.tv_name.setText(item.loadLabel(getActivity().getPackageManager()));
-            holder.iv_icon.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(getActivity(), "iv_icon_click", Toast.LENGTH_SHORT).show();
-                }
-            });
-            holder.tv_name.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(getActivity(), "iv_icon_click", Toast.LENGTH_SHORT).show();
-                }
-            });
-            return convertView;
-        }
-
-        @Override
-        public int getItemViewType(int i) {
-            return 0;
-        }
-
-        @Override
-        public int getViewTypeCount() {
-            return 0;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return false;
-        }
-
-        @Override
-        public boolean areAllItemsEnabled() {
-            return false;
-        }
-
-        @Override
-        public boolean isEnabled(int i) {
-            return false;
-        }
-
-            public void notifyDataSetChanged() {
-            }
-
-            class ViewHolder {
-            ImageView iv_icon;
-            TextView tv_name;
-
-            public ViewHolder(View view) {
-                iv_icon = (ImageView) view.findViewById(R.id.thumbImage);
-                tv_name = (TextView) view.findViewById(R.id.title);
-                view.setTag(this);
-            }
-        }
-
-        private int dp2px(int dp) {
-            return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
-                    getResources().getDisplayMetrics());
-        }
-
-//        @Override
-//        public boolean getSwipEnableByPosition(int position) {
-//            if (position % 2 == 0) {
-//                return false;
-//            }
-//            return true;
-//        }
-    }
-//    class AppAdapter extends BaseSwipListAdapter implements ListAdapter{
-//
-//        @Override
-//        public void registerDataSetObserver(DataSetObserver dataSetObserver) {
-//
-//        }
-//
-//        @Override
-//        public void unregisterDataSetObserver(DataSetObserver dataSetObserver) {
-//
-//        }
-//
-//        @Override
-//        public int getCount() {
-//            return mAppList.size();
-//        }
-//
-//        @Override
-//        public ApplicationInfo getItem(int position) {
-//            return mAppList.get(position);
-//        }
-//
-//        @Override
-//        public long getItemId(int position) {
-//            return position;
-//        }
-//
-//        @Override
-//        public boolean hasStableIds() {
-//            return false;
-//        }
-//
-//        @Override
-//        public View getView(int position, View convertView, ViewGroup parent) {
-//            if (convertView == null) {
-//                convertView = View.inflate(getActivity().getApplicationContext(),
-//                        R.layout.item_history, null);
-//                new ViewHolder(convertView);
-//            }
-//            ViewHolder holder = (ViewHolder) convertView.getTag();
-//            ApplicationInfo item = getItem(position);
-//            holder.iv_icon.setImageDrawable(item.loadIcon(getActivity().getPackageManager()));
-//            holder.tv_name.setText(item.loadLabel(getActivity().getPackageManager()));
-//            holder.iv_icon.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    Toast.makeText(getActivity(), "iv_icon_click", Toast.LENGTH_SHORT).show();
-//                }
-//            });
-//            holder.tv_name.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    Toast.makeText(getActivity(), "iv_icon_click", Toast.LENGTH_SHORT).show();
-//                }
-//            });
-//            return convertView;
-//        }
-//
-//        @Override
-//        public int getItemViewType(int i) {
-//            return 0;
-//        }
-//
-//        @Override
-//        public int getViewTypeCount() {
-//            return 0;
-//        }
-//
-//        @Override
-//        public boolean isEmpty() {
-//            return false;
-//        }
-//
-//        @Override
-//        public boolean areAllItemsEnabled() {
-//            return false;
-//        }
-//
-//        @Override
-//        public boolean isEnabled(int i) {
-//            return false;
-//        }
-//
-//        class ViewHolder {
-//            ImageView iv_icon;
-//            TextView tv_name;
-//
-//            public ViewHolder(View view) {
-//                iv_icon = (ImageView) view.findViewById(R.id.iv_icon);
-//                tv_name = (TextView) view.findViewById(R.id.tv_name);
-//                view.setTag(this);
-//            }
-//        }
-//
-////        @Override
-//        public boolean getSwipEnableByPosition(int position) {
-//            if (position % 2 == 0) {
-//                return false;
-//            }
-//            return true;
-//        }
-//    }
 
     private class BaseSwipListAdapter {
         public void notifyDataSetChanged() {
@@ -404,6 +286,16 @@ public class HistoryFragment extends Fragment {
     private int dp2px(int dp) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
                 getResources().getDisplayMetrics());
+    }
+
+    public static void loadArray(String key, ArrayList<String> sKey) {
+
+        sKey.clear();
+        int size = sharedpreferences.getInt(key + "_size", 0);
+
+        for (int i = 0; i < size; i++) {
+            sKey.add(sharedpreferences.getString(key + "_" + i, null));
+        }
     }
 
 }

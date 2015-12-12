@@ -2,11 +2,10 @@ package com.openetizen.cevysays.opennews.fragments;
 
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,7 +19,6 @@ import android.widget.Toast;
 
 import com.openetizen.cevysays.opennews.R;
 import com.openetizen.cevysays.opennews.activity.DetailsGalleryActivity;
-import com.openetizen.cevysays.opennews.activity.MainActivity;
 import com.openetizen.cevysays.opennews.adapters.GridViewAdapter;
 import com.openetizen.cevysays.opennews.models.GridItem;
 
@@ -38,26 +36,24 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import cz.msebera.android.httpclient.entity.StringEntity;
-
 /**
  * A simple {@link Fragment} subclass.
  */
-public class GalleryFragment extends Fragment {
+public class PhotosFragment extends android.support.v4.app.Fragment {
     private static final String TAG = GalleryFragment.class.getSimpleName();
     private View rootView;
     protected FragmentActivity mActivity;
+    private int idPhotos;
 
     private GridView mGridView;
     private ProgressBar mProgressBar;
 
     private GridViewAdapter mGridAdapter;
     private ArrayList<GridItem> mGridData;
-    private String FEED_URL = "http://openetizen.com/api/v1/albums";
-    private int albumID;
+    private String FEED_URL = "http://openetizen.com/api/v1/albums/";
 
 
-    public GalleryFragment() {
+    public PhotosFragment() {
         // Required empty public constructor
     }
 
@@ -71,7 +67,7 @@ public class GalleryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        rootView = inflater.inflate(R.layout.fragment_gallery, container, false);
+        rootView = inflater.inflate(R.layout.fragment_photos, container, false);
 
         mGridView = (GridView) rootView.findViewById(R.id.gridView);
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
@@ -85,7 +81,22 @@ public class GalleryFragment extends Fragment {
         //Grid view click event
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                ((MainActivity) getActivity()).replaceFragments(new PhotosFragment());
+                GridItem item = (GridItem) parent.getItemAtPosition(position);
+                ImageView imageView = (ImageView) v.findViewById(R.id.grid_item_image);
+
+                Intent intent = new Intent(getActivity(), DetailsGalleryActivity.class);
+                int[] screenLocation = new int[2];
+                imageView.getLocationOnScreen(screenLocation);
+
+                //Pass the image title and url to DetailsActivity
+                intent.putExtra("left", screenLocation[0]).
+                        putExtra("top", screenLocation[1]).
+                        putExtra("width", imageView.getWidth()).
+                        putExtra("height", imageView.getHeight()).
+                        putExtra("title", item.getTitle()).
+                        putExtra("image", item.getImage());
+
+                startActivity(intent);
             }
         });
 
@@ -176,7 +187,6 @@ public class GalleryFragment extends Fragment {
                 JSONArray picture = response.optJSONArray("album");
                 JSONObject images = picture.getJSONObject(i);
                 String image = images.getJSONObject("cover").getJSONObject("photo").getJSONObject("thumb").getString("url");
-                albumID = images.getJSONObject("cover").getInt("album_id");
                 Log.d("cover", images.getJSONObject("cover").getJSONObject("photo").getJSONObject("thumb").getString("url"));
                 item.setImage("http://openetizen.com" + image.toString());
                 Log.d("foto", image.toString());

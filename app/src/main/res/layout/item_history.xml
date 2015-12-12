@@ -12,6 +12,7 @@
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="10dp"
+        android:scaleType="centerCrop"
         android:background="@drawable/icon_opennews" />
 
     <TextView
@@ -32,7 +33,7 @@
         android:layout_marginTop="10dp"
         android:layout_toRightOf="@id/thumbImage"
         android:text="@string/lorem"
-        android:maxLength="40"/>
+        android:maxLines="2"/>
 
     <TextView
         android:id="@+id/date"
@@ -40,7 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/thumbImage"
         android:layout_below="@id/content"
-        android:layout_marginLeft="170dp"
+        android:gravity="right"
         android:text="@string/date"
         android:layout_marginTop="5dp"
         android:layout_alignParentRight="true"/>

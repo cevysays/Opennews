@@ -1,6 +1,5 @@
 package com.openetizen.cevysays.opennews.fragments;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,8 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.JsonHttpResponseHandler;
 import com.openetizen.cevysays.opennews.R;
 import com.openetizen.cevysays.opennews.activity.DetailPostActivity;
 import com.openetizen.cevysays.opennews.adapters.CategoryOneAdapter;
@@ -22,19 +19,14 @@ import com.openetizen.cevysays.opennews.models.CategoryOneItem;
 import com.twotoasters.jazzylistview.JazzyHelper;
 import com.twotoasters.jazzylistview.JazzyListView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 
-import cz.msebera.android.httpclient.Header;
 import jp.co.recruit_lifestyle.android.widget.WaveSwipeRefreshLayout;
 
-;
-
-
-public class AgendaFragment extends Fragment implements AdapterView.OnItemClickListener {
+/**
+ * Created by cevyyufindra on 12/12/15.
+ */
+public class PromotionFragment extends Fragment implements AdapterView.OnItemClickListener {
 
     //    private ArrayList<CategoryOneItem> categoryOneItemArrayList;
     private JazzyListView listView;
@@ -54,7 +46,7 @@ public class AgendaFragment extends Fragment implements AdapterView.OnItemClickL
     private WaveSwipeRefreshLayout mWaveSwipeRefreshLayout;
 
 
-    public AgendaFragment() {
+    public PromotionFragment() {
         // Required empty public constructor
     }
 
@@ -111,14 +103,14 @@ public class AgendaFragment extends Fragment implements AdapterView.OnItemClickL
 
 
         for (int i = 0; i < image.size(); i++) {
-            if (category_cd.get(i).contains("CATE_TP_2")) {
+            if (category_cd.get(i).contains("CATE_TP_3")) {
                 dataCatOne.add(new CategoryOneItem(image.get(i), title.get(i), created_at.get(i), username.get(i), content.get(i), category_cd.get(i), article_id.get(i), user_id.get(i)));
             }
         }
 
         listView = (JazzyListView) rootView.findViewById(R.id.list);
         listView.setTransitionEffect(JazzyHelper.GROW);
-        listView.setOnItemClickListener(AgendaFragment.this);
+        listView.setOnItemClickListener(PromotionFragment.this);
         listView.setAdapter(new CategoryOneAdapter(dataCatOne, getActivity()));
 
 
@@ -127,7 +119,7 @@ public class AgendaFragment extends Fragment implements AdapterView.OnItemClickL
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        Intent intent = new Intent(AgendaFragment.this.getActivity(), DetailPostActivity.class);
+        Intent intent = new Intent(PromotionFragment.this.getActivity(), DetailPostActivity.class);
         intent.putExtra("post", dataCatOne.get(i));
         startActivity(intent);
 
@@ -142,7 +134,4 @@ public class AgendaFragment extends Fragment implements AdapterView.OnItemClickL
             sKey.add(sharedpreferences.getString(key + "_" + i, null));
         }
     }
-
-
 }
-
