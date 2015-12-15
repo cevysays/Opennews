@@ -45,8 +45,8 @@ public class AboutActivity extends ActionBarActivity {
     }
 
     public void openMap (View view){
-        Intent i = new Intent(this, MapsActivity.class);
-        startActivity(i);
+        /*Intent i = new Intent(this, MapsActivity.class);
+        startActivity(i);*/
     }
 
     @Override

@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
@@ -14,16 +13,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Toast;
 
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.openetizen.cevysays.opennews.R;;
+import com.openetizen.cevysays.opennews.R;
 import com.openetizen.cevysays.opennews.activity.DetailPostActivity;
-import com.openetizen.cevysays.opennews.activity.MainActivity;
 import com.openetizen.cevysays.opennews.adapters.CategoryOneAdapter;
 import com.openetizen.cevysays.opennews.models.CategoryOneItem;
 import com.openetizen.cevysays.opennews.util.Utils;
@@ -34,14 +28,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import cz.msebera.android.httpclient.Header;
 import jp.co.recruit_lifestyle.android.widget.WaveSwipeRefreshLayout;
+
+;
 
 
 public class CategoryOneFragment extends Fragment implements AdapterView.OnItemClickListener {

@@ -1,21 +1,18 @@
 package com.openetizen.cevysays.opennews.activity;
 
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Message;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.text.SpannableString;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,33 +21,24 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
-import com.google.android.gms.ads.formats.NativeAd;
 import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-import com.loopj.android.http.ResponseHandlerInterface;
 import com.openetizen.cevysays.opennews.R;
 import com.openetizen.cevysays.opennews.models.CategoryOneItem;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
 import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
-import cz.msebera.android.httpclient.HttpResponse;
 import cz.msebera.android.httpclient.entity.StringEntity;
 
 
@@ -67,6 +55,12 @@ public class PostingActivity extends ActionBarActivity implements AdapterView.On
     Spinner spinnerCat;
     EditText contentArticle;
     ImageButton imageContent;
+
+    boolean isEdit = false;
+
+    int article_ID = 0;
+
+    Bundle extras;
 
     private ArrayList<CategoryOneItem> dataCatOne = new ArrayList<>();
     private ArrayList<String> image = new ArrayList<String>();
@@ -87,6 +81,10 @@ public class PostingActivity extends ActionBarActivity implements AdapterView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_posting);
+
+        extras = getIntent().getExtras();
+
+
 
         sharedPreferences = getSharedPreferences(LoginActivity.MyPREFERENCES, MODE_PRIVATE);
 
@@ -124,6 +122,15 @@ public class PostingActivity extends ActionBarActivity implements AdapterView.On
         contentArticle = (EditText) findViewById(R.id.content_article);
         imageContent = (ImageButton) findViewById(R.id.imageButton);
 
+        if(extras!=null){
+            isEdit = true;
+            titleArticle.setText(extras.getString("title"));
+            spinner.setSelection(Integer.parseInt(extras.getString("kategori").substring(extras.getString("kategori").length()-1)));
+            contentArticle.setText(Html.fromHtml(extras.getString("konten")));
+        }
+
+
+
         // Instantiate Progress Dialog object
         prgDialog = new ProgressDialog(this);
         // Set Progress Dialog Text
@@ -139,7 +146,7 @@ public class PostingActivity extends ActionBarActivity implements AdapterView.On
         String title = titleArticle.getText().toString();
 
         // String category = spinnerCat.getCount();
-        String content = contentArticle.getText().toString();
+        String content = Html.toHtml(SpannableString.valueOf(contentArticle.getText().toString()));
         String category = "";
         if(spinner.getSelectedItemId()==1){
             category = "CATE_TP_1";
@@ -160,8 +167,82 @@ public class PostingActivity extends ActionBarActivity implements AdapterView.On
         }
 
         // Invoke RESTful Web Service with Http parameters
-        invokeWS(jsonPosting);
+        if(isEdit){
+            delete(Integer.parseInt(extras.getString("article_id")),jsonPosting);
+        }else{
+            invokeWS(jsonPosting);
+        }
+
+
     }
+
+    private void delete(int article_ID, final JSONObject json) {
+
+        prgDialog.show();
+
+        JSONObject jsonPosting = new JSONObject();
+        try {
+            jsonPosting.put("article_id",article_ID);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        StringEntity entity = null;
+        try {
+            entity = new StringEntity(jsonPosting.toString());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.delete(this, "http://openetizen.com/api/v1/articles/" + article_ID, entity, "application/json", new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject jsonObject) {
+                // Hide Progress Dialog
+                prgDialog.hide();
+
+                try {
+                    JSONObject obj = new JSONObject(new String(String.valueOf(jsonObject)));
+                    Log.d("Opo", String.valueOf(jsonObject));
+                    invokeWS(json);
+
+
+                } catch (JSONException e) {
+                    // TODO Auto-generated catch block
+                    Toast.makeText(getApplicationContext(), "Error Occured [Server's JSON response might be invalid]!", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                    Log.e("ERROR", "Response");
+                }
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                // Hide Progress Dialog
+
+                Log.e("errorResponse", errorResponse.toString() + "  " + statusCode);
+
+                prgDialog.hide();
+                // When Http response code is '404'
+                if (statusCode == 404) {
+                    Toast.makeText(getApplicationContext(), "Requested resource not found", Toast.LENGTH_LONG).show();
+                }
+                // When Http response code is '500'
+                else if (statusCode == 500) {
+                    Toast.makeText(getApplicationContext(), "Something went wrong at server end", Toast.LENGTH_LONG).show();
+                }
+                // When Http response code other than 404, 500
+                else {
+                    Toast.makeText(getApplicationContext(), "Posting failed", Toast.LENGTH_LONG).show();
+                    // Toast.makeText(getApplicationContext(), "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
+                }
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+            }
+
+        });
+    }
+
+
 
 
     public void invokeWS(JSONObject jsonPosting) {

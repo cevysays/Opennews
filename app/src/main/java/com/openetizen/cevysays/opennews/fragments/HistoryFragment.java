@@ -1,16 +1,11 @@
 package com.openetizen.cevysays.opennews.fragments;
 
 import android.app.ProgressDialog;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.ResolveInfo;
-import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -19,9 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.ListAdapter;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baoyz.swipemenulistview.SwipeMenu;
@@ -32,9 +24,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.openetizen.cevysays.opennews.R;
 import com.openetizen.cevysays.opennews.activity.DetailPostActivity;
-import com.openetizen.cevysays.opennews.activity.MainActivity;
 import com.openetizen.cevysays.opennews.activity.PostingActivity;
-import com.openetizen.cevysays.opennews.adapters.CategoryOneAdapter;
 import com.openetizen.cevysays.opennews.adapters.HistoryAdapter;
 import com.openetizen.cevysays.opennews.models.CategoryOneItem;
 
@@ -43,7 +33,6 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.entity.StringEntity;
@@ -86,6 +75,8 @@ public class HistoryFragment extends Fragment {
         loadArray("content", content);
         loadArray("article_id", article_id);
         loadArray("user_id", user_id);
+
+
 
         prgDialog = new ProgressDialog(getActivity());
         // Set Progress Dialog Text
@@ -151,13 +142,28 @@ public class HistoryFragment extends Fragment {
                 switch (index) {
                     case 0:
                         // open
-                        //open(item);
+                        open(item);
                         break;
                     case 1:
                         // delete
-                        delete(Integer.parseInt(item.getArticle_id()));
-                        dataCatOne.remove(position);
-                        mAdapter.notifyDataSetChanged();
+                        delete(Integer.parseInt(item.getArticle_id()),position);
+                        image.remove(position);
+                        title.remove(position);
+                        created_at.remove(position);
+                        username.remove(position);
+                        category_cd.remove(position);
+                        content.remove(position);
+                        article_id.remove(position);
+                        user_id.remove(position);
+                        saveArray("image", image);
+                        saveArray("title", title);
+                        saveArray("created_at", created_at);
+                        saveArray("username", username);
+                        saveArray("category_cd", category_cd);
+                        saveArray("content", content);
+                        saveArray("article_id", article_id);
+                        saveArray("user_id", user_id);
+
                         break;
                 }
                 return false;
@@ -206,7 +212,7 @@ public class HistoryFragment extends Fragment {
 
     }
 
-    private void delete(int article_ID) {
+    private void delete(int article_ID, final int position) {
 
         prgDialog.show();
 
@@ -244,6 +250,13 @@ public class HistoryFragment extends Fragment {
 
 
                 }
+
+                dataCatOne.remove(position);
+
+                mAdapter = new HistoryAdapter(dataCatOne, getActivity());
+
+                mListView.setAdapter(mAdapter);
+
             }
 
             @Override
@@ -263,7 +276,7 @@ public class HistoryFragment extends Fragment {
                 }
                 // When Http response code other than 404, 500
                 else {
-                    Toast.makeText(getActivity().getApplicationContext(), "Posting failed", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity().getApplicationContext(), "Delete failed", Toast.LENGTH_LONG).show();
                     // Toast.makeText(getApplicationContext(), "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
                 }
                 super.onFailure(statusCode, headers, throwable, errorResponse);
@@ -274,6 +287,12 @@ public class HistoryFragment extends Fragment {
 
     private void open(CategoryOneItem item) {
         // open app
+        Intent i = new Intent(getActivity(), PostingActivity.class);
+        i.putExtra("title",item.getTitle());
+        i.putExtra("kategori",item.getCategory_cd());
+        i.putExtra("konten",item.getContent());
+        i.putExtra("article_id",item.getArticle_id());
+        startActivity(i);
 
     }
 
@@ -296,6 +315,18 @@ public class HistoryFragment extends Fragment {
         for (int i = 0; i < size; i++) {
             sKey.add(sharedpreferences.getString(key + "_" + i, null));
         }
+    }
+
+    public static boolean saveArray(String key, ArrayList<String> sKey) {
+        SharedPreferences.Editor mEdit1 = sharedpreferences.edit();
+        mEdit1.putInt(key + "_size", sKey.size()); /* sKey is an array */
+
+        for (int i = 0; i < sKey.size(); i++) {
+            mEdit1.remove(key + "_" + i);
+            mEdit1.putString(key + "_" + i, sKey.get(i));
+        }
+
+        return mEdit1.commit();
     }
 
 }

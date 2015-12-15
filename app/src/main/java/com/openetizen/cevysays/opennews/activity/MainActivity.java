@@ -1,12 +1,12 @@
 package com.openetizen.cevysays.opennews.activity;
 
-import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.TaskStackBuilder;
@@ -14,27 +14,20 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.openetizen.cevysays.opennews.fragments.PromotionFragment;
-import com.openetizen.cevysays.opennews.util.Utils;
+import com.openetizen.cevysays.opennews.R;
 import com.openetizen.cevysays.opennews.fragments.AgendaFragment;
 import com.openetizen.cevysays.opennews.fragments.CategoryOneFragment;
-import com.openetizen.cevysays.opennews.fragments.HistoryFragment;
 import com.openetizen.cevysays.opennews.fragments.GalleryFragment;
-import com.openetizen.cevysays.opennews.fragments.NavigationDrawerFragmentUser;
-import com.openetizen.cevysays.opennews.util.NavigationDrawerCallbacks;
-import com.openetizen.cevysays.opennews.R;
+import com.openetizen.cevysays.opennews.fragments.HistoryFragment;
 import com.openetizen.cevysays.opennews.fragments.NavigationDrawerFragment;
-import com.parse.Parse;
-
-import java.util.HashMap;
+import com.openetizen.cevysays.opennews.fragments.NavigationDrawerFragmentUser;
+import com.openetizen.cevysays.opennews.fragments.PromotionFragment;
+import com.openetizen.cevysays.opennews.util.NavigationDrawerCallbacks;
 
 
 public class MainActivity extends ActionBarActivity
@@ -46,9 +39,6 @@ public class MainActivity extends ActionBarActivity
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private NavigationDrawerFragmentUser mNavigationDrawerFragmentUser;
     private Toolbar mToolbar;
-
-    String APPLICATION_ID = "JskEVHlU3OWG8tgcSVUDVU2tr0nru42WIr8VcIDp";
-    String CLIENT_ID = "UT2FSR0bYf102HQ92veMmbk9othIaoTmvxSsiVDo";
 
     Bundle bundle = new Bundle();
 
@@ -74,10 +64,6 @@ public class MainActivity extends ActionBarActivity
         mToolbar = (Toolbar) findViewById(R.id.toolbar_actionbar);
         setSupportActionBar(mToolbar);
 
-        if (Utils.isInitialized == false) {
-            Parse.initialize(this, APPLICATION_ID, CLIENT_ID);
-            Utils.isInitialized = true;
-        }
 
 //        if (bundle == null) {
 //            LinearLayout login = (LinearLayout) findViewById(R.id.login);
