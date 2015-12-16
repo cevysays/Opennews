@@ -149,6 +149,7 @@
         android:layout_marginStart="16dp"
         android:background="@drawable/row_selector"
         android:clickable="true"
+        android:onClick="logoutButton"
         android:orientation="horizontal">
 
         <ImageView
@@ -159,9 +160,10 @@
             android:src="@drawable/ic_person_black_18dp" />
 
         <TextView
+
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:onClick="logoutButton"
+
             android:layout_marginLeft="16dp"
             android:gravity="center_vertical"
             android:text="Keluar"

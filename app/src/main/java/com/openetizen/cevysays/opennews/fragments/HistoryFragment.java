@@ -2,12 +2,14 @@ package com.openetizen.cevysays.opennews.fragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -137,8 +139,8 @@ public class HistoryFragment extends Fragment {
         // step 2. listener item click event
         mListView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
             @Override
-            public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
-                CategoryOneItem item = dataCatOne.get(position);
+            public boolean onMenuItemClick(final int position, SwipeMenu menu, int index) {
+                final CategoryOneItem item = dataCatOne.get(position);
                 switch (index) {
                     case 0:
                         // open
@@ -146,24 +148,38 @@ public class HistoryFragment extends Fragment {
                         break;
                     case 1:
                         // delete
-                        delete(Integer.parseInt(item.getArticle_id()),position);
-                        image.remove(position);
-                        title.remove(position);
-                        created_at.remove(position);
-                        username.remove(position);
-                        category_cd.remove(position);
-                        content.remove(position);
-                        article_id.remove(position);
-                        user_id.remove(position);
-                        saveArray("image", image);
-                        saveArray("title", title);
-                        saveArray("created_at", created_at);
-                        saveArray("username", username);
-                        saveArray("category_cd", category_cd);
-                        saveArray("content", content);
-                        saveArray("article_id", article_id);
-                        saveArray("user_id", user_id);
+                        AlertDialog.Builder builder =
+                                new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle);
+                        builder.setTitle(R.string.title_dialog_delete);
+                        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                delete(Integer.parseInt(item.getArticle_id()),position);
+                                image.remove(position);
+                                title.remove(position);
+                                created_at.remove(position);
+                                username.remove(position);
+                                category_cd.remove(position);
+                                content.remove(position);
+                                article_id.remove(position);
+                                user_id.remove(position);
+                                saveArray("image", image);
+                                saveArray("title", title);
+                                saveArray("created_at", created_at);
+                                saveArray("username", username);
+                                saveArray("category_cd", category_cd);
+                                saveArray("content", content);
+                                saveArray("article_id", article_id);
+                                saveArray("user_id", user_id);
+                            }
+                        });
+                        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
 
+                            }
+                        });
+                        builder.show();
                         break;
                 }
                 return false;

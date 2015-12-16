@@ -2,7 +2,6 @@ package com.openetizen.cevysays.opennews.fragments;
 
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,13 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.openetizen.cevysays.opennews.R;
-import com.openetizen.cevysays.opennews.activity.DetailsGalleryActivity;
-import com.openetizen.cevysays.opennews.activity.MainActivity;
+import com.openetizen.cevysays.opennews.activity.PhotosActivity;
 import com.openetizen.cevysays.opennews.adapters.GridViewAdapter;
 import com.openetizen.cevysays.opennews.models.GridItem;
 
@@ -38,7 +35,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import cz.msebera.android.httpclient.entity.StringEntity;
+import jp.co.recruit_lifestyle.android.widget.WaveSwipeRefreshLayout;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -55,6 +52,11 @@ public class GalleryFragment extends Fragment {
     private ArrayList<GridItem> mGridData;
     private String FEED_URL = "http://openetizen.com/api/v1/albums";
     private int albumID;
+
+    private Bundle bundle = new Bundle();
+
+
+    private WaveSwipeRefreshLayout mWaveSwipeRefreshLayout;
 
 
     public GalleryFragment() {
@@ -76,22 +78,37 @@ public class GalleryFragment extends Fragment {
         mGridView = (GridView) rootView.findViewById(R.id.gridView);
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
 
-
+        getActivity().setTitle("Gallery");
         //Initialize with empty data
         mGridData = new ArrayList<>();
         mGridAdapter = new GridViewAdapter(getActivity(), R.layout.grid_item_layout, mGridData);
         mGridView.setAdapter(mGridAdapter);
 
         //Grid view click event
-        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                ((MainActivity) getActivity()).replaceFragments(new PhotosFragment());
+
+        mWaveSwipeRefreshLayout = (WaveSwipeRefreshLayout) rootView.findViewById(R.id.main_swipe);
+        mWaveSwipeRefreshLayout.setOnRefreshListener(new WaveSwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Do work to refresh the list here.
+                mGridData = new ArrayList<>();
+                new AsyncHttpTask().execute(FEED_URL);
             }
         });
 
-
         //Start download
         new AsyncHttpTask().execute(FEED_URL);
+        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                Log.e("album_ID",""+mGridData.get(position).getAlbum_ID());
+                /*bundle.putInt("album_ID",mGridData.get(position).getAlbum_ID());
+                ((MainActivity) getActivity()).replaceFragments(new PhotosFragment(),bundle);*/
+                Intent i = new Intent(getActivity(), PhotosActivity.class);
+                i.putExtra("album_ID",mGridData.get(position).getAlbum_ID());
+                i.putExtra("album_Name",mGridData.get(position).getTitle());
+                startActivity(i);
+            }
+        });
         mProgressBar.setVisibility(View.VISIBLE);
 
         return rootView;
@@ -130,6 +147,7 @@ public class GalleryFragment extends Fragment {
             // Download complete. Lets update UI
 
             if (result == 1) {
+                mWaveSwipeRefreshLayout.setRefreshing(false);
                 mGridAdapter.setGridData(mGridData);
             } else {
                 Toast.makeText(getActivity(), "Failed to fetch data!", Toast.LENGTH_SHORT).show();
@@ -175,9 +193,9 @@ public class GalleryFragment extends Fragment {
 //                JSONObject picture = posts.optJSONObject(i).optJSONObject("picture").optJSONObject("image").optJSONObject("url");
                 JSONArray picture = response.optJSONArray("album");
                 JSONObject images = picture.getJSONObject(i);
-                String image = images.getJSONObject("cover").getJSONObject("photo").getJSONObject("thumb").getString("url");
-                albumID = images.getJSONObject("cover").getInt("album_id");
-                Log.d("cover", images.getJSONObject("cover").getJSONObject("photo").getJSONObject("thumb").getString("url"));
+                String image = images.getJSONObject("cover").getJSONObject("photo").getJSONObject("full").getString("url");
+                item.setAlbum_ID(images.getJSONObject("cover").getInt("album_id"));
+                Log.d("cover", images.getJSONObject("cover").getJSONObject("photo").getJSONObject("full").getString("url"));
                 item.setImage("http://openetizen.com" + image.toString());
                 Log.d("foto", image.toString());
 
@@ -194,6 +212,8 @@ public class GalleryFragment extends Fragment {
             e.printStackTrace();
         }
     }
+
+
 
 
 }

@@ -14,6 +14,7 @@
          location permissions for the 'MyLocation' functionality. 
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <!-- &lt;!&ndash; -->
     <!-- To retrieve OAuth 2.0 tokens or invalidate tokens to disconnect a user. This disconnect -->
     <!-- option is required to comply with the Google+ Sign-In developer policies -->
@@ -62,11 +63,11 @@
         <activity
             android:name=".activity.PostingActivity"
             android:label="@string/title_activity_posting" />
-
         <activity
             android:name=".activity.DetailPostActivity"
             android:label="@string/app_name"
             android:theme="@style/AppThemes">
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -78,10 +79,9 @@
         <activity
             android:name=".activity.UploadPhotoActivity"
             android:label="Unggah Foto" />
-
         <activity
             android:name=".activity.SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
+            android:label="@string/title_activity_settings" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -93,13 +93,16 @@
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="@string/google_maps_key" />
+
         <uses-library
             android:name="com.google.android.maps"
             android:required="false" />
 
         <activity
             android:name=".activity.MapsActivity"
-            android:label="@string/title_activity_maps"></activity>
+            android:label="@string/title_activity_maps" />
+        <activity android:name=".activity.PhotosActivity"
+            android:label="@string/title_activity_photos"></activity>
     </application>
 
 </manifest>

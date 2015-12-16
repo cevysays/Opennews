@@ -1,6 +1,7 @@
 package com.openetizen.cevysays.opennews.activity;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -10,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.SpannableString;
@@ -91,7 +93,7 @@ public class PostingActivity extends ActionBarActivity implements AdapterView.On
         mToolbar = (Toolbar) findViewById(R.id.toolbar_actionbar);
         setSupportActionBar(mToolbar);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
         Window window = getWindow();
@@ -159,7 +161,7 @@ public class PostingActivity extends ActionBarActivity implements AdapterView.On
         JSONObject jsonPosting = new JSONObject();
         try {
             jsonPosting.put("user_id",sharedPreferences.getInt("loginUserID", 0));
-            jsonPosting.put("caetgory_cd",category);
+            jsonPosting.put("category_cd",category);
             jsonPosting.put("title",title);
             jsonPosting.put("content",content);
         } catch (JSONException e) {
@@ -393,5 +395,27 @@ public class PostingActivity extends ActionBarActivity implements AdapterView.On
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder =
+                new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
+        builder.setTitle(R.string.title_dialog_discard);
+        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                PostingActivity.super.onBackPressed();
+            }
+        });
+        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        builder.show();
+
+
     }
 }

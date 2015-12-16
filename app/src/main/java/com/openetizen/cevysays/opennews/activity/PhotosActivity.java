@@ -1,16 +1,16 @@
-package com.openetizen.cevysays.opennews.fragments;
+package com.openetizen.cevysays.opennews.activity;
 
-
-import android.app.Activity;
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -18,8 +18,8 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.openetizen.cevysays.opennews.R;
-import com.openetizen.cevysays.opennews.activity.DetailsGalleryActivity;
 import com.openetizen.cevysays.opennews.adapters.GridViewAdapter;
+import com.openetizen.cevysays.opennews.fragments.GalleryFragment;
 import com.openetizen.cevysays.opennews.models.GridItem;
 
 import org.apache.http.HttpResponse;
@@ -36,12 +36,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class PhotosFragment extends android.support.v4.app.Fragment {
+public class PhotosActivity extends AppCompatActivity {
+
     private static final String TAG = GalleryFragment.class.getSimpleName();
-    private View rootView;
     protected FragmentActivity mActivity;
     private int idPhotos;
 
@@ -53,34 +50,39 @@ public class PhotosFragment extends android.support.v4.app.Fragment {
     private String FEED_URL = "http://openetizen.com/api/v1/albums/";
 
     private Bundle extras;
-
-
-    public PhotosFragment() {
-        // Required empty public constructor
-    }
+    private Toolbar mToolbar;
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        mActivity = (FragmentActivity) activity;
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        rootView = inflater.inflate(R.layout.fragment_photos, container, false);
-
-        extras = this.getArguments();
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_photos);
+        extras = getIntent().getExtras();
         FEED_URL+=extras.getInt("album_ID");
-        mGridView = (GridView) rootView.findViewById(R.id.gridView);
-        mProgressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
-
-
-        //Initialize with empty data
+        mGridView = (GridView) findViewById(R.id.gridView);
+        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         mGridData = new ArrayList<>();
-        mGridAdapter = new GridViewAdapter(getActivity(), R.layout.grid_item_layout, mGridData);
+        mGridAdapter = new GridViewAdapter(this, R.layout.grid_item_layout, mGridData);
         mGridView.setAdapter(mGridAdapter);
+
+        mToolbar = (Toolbar) findViewById(R.id.toolbar_actionbar);
+        mToolbar.setTitle(extras.getString("album_Name"));
+        setSupportActionBar(mToolbar);
+
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
+        Window window = getWindow();
+
+// clear FLAG_TRANSLUCENT_STATUS flag:
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+// add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+// finally change the color
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.setStatusBarColor(getResources().getColor(R.color.myPrimaryDarkColor));
+        }
 
         //Grid view click event
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -88,7 +90,8 @@ public class PhotosFragment extends android.support.v4.app.Fragment {
                 GridItem item = (GridItem) parent.getItemAtPosition(position);
                 ImageView imageView = (ImageView) v.findViewById(R.id.grid_item_image);
 
-                Intent intent = new Intent(getActivity(), DetailsGalleryActivity.class);
+
+                Intent intent = new Intent(PhotosActivity.this, DetailsGalleryActivity.class);
                 int[] screenLocation = new int[2];
                 imageView.getLocationOnScreen(screenLocation);
 
@@ -108,12 +111,8 @@ public class PhotosFragment extends android.support.v4.app.Fragment {
         //Start download
         new AsyncHttpTask().execute(FEED_URL);
         mProgressBar.setVisibility(View.VISIBLE);
-
-        return rootView;
     }
 
-
-    //Downloading data asynchronously
     public class AsyncHttpTask extends AsyncTask<String, Void, Integer> {
 
         @Override
@@ -147,14 +146,13 @@ public class PhotosFragment extends android.support.v4.app.Fragment {
             if (result == 1) {
                 mGridAdapter.setGridData(mGridData);
             } else {
-                Toast.makeText(getActivity(), "Failed to fetch data!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getBaseContext(), "Failed to fetch data!", Toast.LENGTH_SHORT).show();
             }
 
             //Hide progressbar
             mProgressBar.setVisibility(View.GONE);
         }
     }
-
 
     String streamToString(InputStream stream) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
@@ -204,6 +202,4 @@ public class PhotosFragment extends android.support.v4.app.Fragment {
             e.printStackTrace();
         }
     }
-
-
 }

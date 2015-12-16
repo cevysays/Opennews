@@ -6,6 +6,15 @@ package com.openetizen.cevysays.opennews.models;
 public class GridItem {
     private String image;
     private String title;
+    private int album_ID;
+
+    public int getAlbum_ID() {
+        return album_ID;
+    }
+
+    public void setAlbum_ID(int album_ID) {
+        this.album_ID = album_ID;
+    }
 
     public GridItem() {
         super();

@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.TaskStackBuilder;
@@ -229,13 +228,29 @@ public class MainActivity extends ActionBarActivity
     }
 
     public void logoutButton(View view) {
-        SharedPreferences sharedpreferences = getSharedPreferences(LoginActivity.MyPREFERENCES, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedpreferences.edit();
-        editor.putBoolean("login", false);
-        editor.clear();
-        editor.commit();
-        Intent i = new Intent(this, MainActivity.class);
-        startActivity(i);
+        AlertDialog.Builder builder =
+                new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
+        builder.setTitle(R.string.title_dialog_delete);
+        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                SharedPreferences sharedpreferences = getSharedPreferences(LoginActivity.MyPREFERENCES, Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+                editor.putBoolean("login", false);
+                editor.clear();
+                editor.commit();
+                Intent a = new Intent(MainActivity.this, MainActivity.class);
+                startActivity(a);
+            }
+        });
+        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        builder.show();
+
     }
 
     @Override
@@ -252,6 +267,14 @@ public class MainActivity extends ActionBarActivity
             else
                 super.onBackPressed();
         }
+
+        /*int count = getFragmentManager().getBackStackEntryCount();
+
+        if (count == 3) {
+            replaceFragments(new GalleryFragment(),null);
+        } else {
+            super.onBackPressed();
+        }*/
     }
 
 
@@ -315,15 +338,24 @@ public class MainActivity extends ActionBarActivity
         return super.onOptionsItemSelected(item);
     }
 
-    public void replaceFragments(Fragment fragment) {
+    /*public void replaceFragments(Fragment fragment, Bundle bundle) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         android.support.v4.app.FragmentTransaction transaction
                 = fragmentManager.beginTransaction();
+        if(bundle!=null) {
+            fragment.setArguments(bundle);
+        }
         transaction.replace(R.id.container, fragment);
         transaction.setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.commit();
-        getSupportActionBar().setTitle("Photo");
+        if(bundle!=null) {
+            getSupportActionBar().setTitle("Photo");
+        }else{
+            getSupportActionBar().setTitle("Gallery");
+        }
 
-    }
+    }*/
+
+
 }
 

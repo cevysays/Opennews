@@ -41,6 +41,7 @@
                 android:layout_height="200dp"
                 android:layout_gravity="center_horizontal"
                 android:onClick="imageUpload"
+                android:scaleType="fitXY"
                 android:src="@drawable/ic_add_a_photo_white_48dp" />
 
             <EditText
