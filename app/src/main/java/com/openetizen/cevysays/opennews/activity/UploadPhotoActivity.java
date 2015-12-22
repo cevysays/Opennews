@@ -17,7 +17,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.openetizen.cevysays.opennews.R;
@@ -27,6 +30,7 @@ public class UploadPhotoActivity extends AppCompatActivity {
     private static int RESULT_LOAD_IMG = 1;
     String imgDecodableString;
     private Toolbar mToolbar;
+//    private Spinner spinnerAlbum;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +53,16 @@ public class UploadPhotoActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.setStatusBarColor(getResources().getColor(R.color.myPrimaryDarkColor));
         }
+
+//        spinnerAlbum = (Spinner) findViewById(R.id.spinner);
+//// Create an ArrayAdapter using the string array and a default spinner layout
+//        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+//                R.array.category, android.R.layout.simple_spinner_item);
+//// Specify the layout to use when the list of choices appears
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//// Apply the adapter to the spinner
+//        spinnerAlbum.setAdapter(adapter);
+//        spinnerAlbum.setOnItemSelectedListener((AdapterView.OnItemSelectedListener) this);
 
     }
 

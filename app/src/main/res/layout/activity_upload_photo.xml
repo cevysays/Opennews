@@ -3,10 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/white"
     android:focusable="true"
     android:focusableInTouchMode="true"
+    android:orientation="vertical"
     tools:context="com.openetizen.cevysays.opennews.activity.UploadPhotoActivity">
 
     <include
@@ -28,15 +28,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            android:text="Ambil foto / pilih dari galeri" />
+            android:text="Pilih dari galeri" />
 
         <ImageButton
             android:id="@+id/imageButton"
-            android:onClick="imageUpload"
             android:layout_width="400dp"
             android:layout_height="200dp"
             android:layout_gravity="center_horizontal"
+            android:onClick="imageUpload"
             android:src="@drawable/ic_add_a_photo_white_48dp" />
+
+        <!--<Spinner-->
+            <!--android:id="@+id/spinner_album"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="wrap_content" />-->
 
         <EditText
             android:id="@+id/Desc_photo"

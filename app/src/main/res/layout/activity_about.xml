@@ -34,7 +34,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:gravity="center_vertical"
-                    android:text="Opennews"
+                    android:text="OpenNews"
                     android:textColor="@color/white"
                     android:textSize="20sp" />
             </LinearLayout>

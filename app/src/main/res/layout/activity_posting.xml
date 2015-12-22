@@ -74,16 +74,5 @@
 
         </LinearLayout>
 
-        <!--<Button-->
-        <!--android:id="@+id/posting_button"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:background="@color/myPrimaryColor"-->
-        <!--android:clickable="true"-->
-        <!--android:text="Terbitkan"-->
-        <!--android:textColor="@color/white"-->
-        <!--android:textSize="18sp"/>-->
-
-
     </ScrollView>
 </LinearLayout>

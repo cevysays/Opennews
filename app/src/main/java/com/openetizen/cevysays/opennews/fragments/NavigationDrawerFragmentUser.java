@@ -124,9 +124,9 @@ public class NavigationDrawerFragmentUser extends Fragment implements Navigation
         List<NavigationItem> items = new ArrayList<NavigationItem>();
         items.add(new NavigationItem("Berita", getResources().getDrawable(R.drawable.ic_chrome_reader_mode_black_24dp)));
         items.add(new NavigationItem("Agenda", getResources().getDrawable(R.drawable.ic_view_agenda_black_24dp)));
-        items.add(new NavigationItem("Promosi", getResources().getDrawable(R.drawable.ic_view_agenda_black_24dp)));
+        items.add(new NavigationItem("Promosi", getResources().getDrawable(R.drawable.ic_record_voice_over_black_24dp)));
         items.add(new NavigationItem("Galeri", getResources().getDrawable(R.drawable.ic_photo_library_black_24dp)));
-        items.add(new NavigationItem("Histori Artikel", getResources().getDrawable(R.drawable.ic_description_black_24dp)));
+        items.add(new NavigationItem("Histori Artikel", getResources().getDrawable(R.drawable.ic_history_black_24dp)));
         return items;
     }
 
@@ -233,7 +233,7 @@ public class NavigationDrawerFragmentUser extends Fragment implements Navigation
 
     public void setUserData(String user, String email, Bitmap avatar) {
         ImageView avatarContainer = (ImageView) mFragmentContainerView.findViewById(R.id.imgAvatar);
-        ((TextView) mFragmentContainerView.findViewById(R.id.txtUserEmail)).setText(email);
+//        ((TextView) mFragmentContainerView.findViewById(R.id.txtUserEmail)).setText(email);
         ((TextView) mFragmentContainerView.findViewById(R.id.txtUsername)).setText(user);
         avatarContainer.setImageDrawable(new RoundImage(avatar));
 

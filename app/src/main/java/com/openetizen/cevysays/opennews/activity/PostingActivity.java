@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AlertDialog;
@@ -30,13 +31,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.openetizen.cevysays.opennews.R;
 import com.openetizen.cevysays.opennews.models.CategoryOneItem;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
@@ -73,6 +78,8 @@ public class PostingActivity extends ActionBarActivity implements AdapterView.On
     private ArrayList<String> content = new ArrayList<String>();
     private ArrayList<String> category_cd = new ArrayList<String>();
     private ArrayList<String> article_id = new ArrayList<String>();
+
+    private String image_url = "";
 
     private SharedPreferences sharedPreferences;
 
@@ -149,19 +156,31 @@ public class PostingActivity extends ActionBarActivity implements AdapterView.On
 
         // String category = spinnerCat.getCount();
         String content = Html.toHtml(SpannableString.valueOf(contentArticle.getText().toString()));
-        String category = "";
+        String category_cd = "";
         if(spinner.getSelectedItemId()==1){
-            category = "CATE_TP_1";
+            category_cd = "CATE_TP_1";
         }else if(spinner.getSelectedItemId()==2){
-            category = "CATE_TP_2";
+            category_cd = "CATE_TP_2";
         }else if(spinner.getSelectedItemId()==3){
-            category = "CATE_TP_3";
+            category_cd = "CATE_TP_3";
         }
+
+
+        File myFile = new File(image_url);
+
+        RequestParams params = new RequestParams();
+        params.put("article[user_id]", sharedPreferences.getInt("loginUserID", 0));
+        params.put("article[category_cd]", category_cd);
+        params.put("article[title]", title);
+        params.put("article[content]", content);
+        try {
+            params.put("article[image]", new File(image_url));
+        } catch(FileNotFoundException e) {}
 
         JSONObject jsonPosting = new JSONObject();
         try {
             jsonPosting.put("user_id",sharedPreferences.getInt("loginUserID", 0));
-            jsonPosting.put("category_cd",category);
+            jsonPosting.put("category_cd",category_cd);
             jsonPosting.put("title",title);
             jsonPosting.put("content",content);
         } catch (JSONException e) {
@@ -172,7 +191,7 @@ public class PostingActivity extends ActionBarActivity implements AdapterView.On
         if(isEdit){
             delete(Integer.parseInt(extras.getString("article_id")),jsonPosting);
         }else{
-            invokeWS(jsonPosting);
+            invokeWS(params);
         }
 
 
@@ -206,7 +225,7 @@ public class PostingActivity extends ActionBarActivity implements AdapterView.On
                 try {
                     JSONObject obj = new JSONObject(new String(String.valueOf(jsonObject)));
                     Log.d("Opo", String.valueOf(jsonObject));
-                    invokeWS(json);
+                    //invokeWS(json);
 
 
                 } catch (JSONException e) {
@@ -247,73 +266,67 @@ public class PostingActivity extends ActionBarActivity implements AdapterView.On
 
 
 
-    public void invokeWS(JSONObject jsonPosting) {
+    public void invokeWS(RequestParams params) {
 
         StringEntity entity = null;
-
-        try {
-            entity = new StringEntity(jsonPosting.toString());
-        } catch (UnsupportedEncodingException e) {
-            Log.e("Error Entity", e.getMessage());
-        }
 
         // Show Progress Dialog
         prgDialog.show();
 
         AsyncHttpClient client = new AsyncHttpClient();
-        client.post(this, "http://openetizen.com/api/v1/articles", entity, "application/json", new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject jsonObject) {
-                // Hide Progress Dialog
-                prgDialog.hide();
+        client.post("http://openetizen.com/api/v1/articles", params, new AsyncHttpResponseHandler() {
 
-                try {
-                    JSONObject obj = new JSONObject(new String(String.valueOf(jsonObject)));
-                    Log.d("Opo", String.valueOf(jsonObject));
-                    if (obj.getString("status").equalsIgnoreCase("success")) {
-                        Toast.makeText(getApplicationContext(), "Artikel berhasil diunggah!", Toast.LENGTH_LONG).show();
-                        Intent i = new Intent(PostingActivity.this, MainActivity.class);
-                        startActivity(i);
-                    } else {
-                        errorMsg.setText(obj.getString("error_msg"));
-                        Toast.makeText(getApplicationContext(), obj.getString("error_msg"), Toast.LENGTH_LONG).show();
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                        prgDialog.hide();
+
+                        try {
+                            JSONObject obj = new JSONObject(new String(responseBody));
+                            if (obj.getString("status").equalsIgnoreCase("success")) {
+                                Log.e("result",obj.toString());
+                                Toast.makeText(getApplicationContext(), "Artikel berhasil diunggah!", Toast.LENGTH_LONG).show();
+                                Intent i = new Intent(PostingActivity.this, MainActivity.class);
+                                startActivity(i);
+                            } else {
+                                errorMsg.setText(obj.getString("error_msg"));
+                                Toast.makeText(getApplicationContext(), obj.getString("error_msg"), Toast.LENGTH_LONG).show();
+                            }
+
+                        } catch (JSONException e) {
+                            // TODO Auto-generated catch block
+                            Toast.makeText(getApplicationContext(), "Error Occured [Server's JSON response might be invalid]!", Toast.LENGTH_LONG).show();
+                            e.printStackTrace();
+                            Log.e("ERROR", "Response");
+
+
+                        }
                     }
 
-                } catch (JSONException e) {
-                    // TODO Auto-generated catch block
-                    Toast.makeText(getApplicationContext(), "Error Occured [Server's JSON response might be invalid]!", Toast.LENGTH_LONG).show();
-                    e.printStackTrace();
-                    Log.e("ERROR", "Response");
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                        Log.e("errorResponse", /*responseBody.toString()*/  "  " + statusCode);
 
+                        prgDialog.hide();
+                        // When Http response code is '404'
+                        if (statusCode == 404) {
+                            Toast.makeText(getApplicationContext(), "Requested resource not found", Toast.LENGTH_LONG).show();
+                        }
+                        // When Http response code is '500'
+                        else if (statusCode == 500) {
+                            Toast.makeText(getApplicationContext(), "Something went wrong at server end", Toast.LENGTH_LONG).show();
+                        }
+                        // When Http response code other than 404, 500
+                        else {
+                            Toast.makeText(getApplicationContext(), "Posting failed", Toast.LENGTH_LONG).show();
+                            // Toast.makeText(getApplicationContext(), "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
+                        }
+                    }
 
-                }
             }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                // Hide Progress Dialog
+            );
 
-                Log.e("errorResponse", errorResponse.toString() + "  " + statusCode);
-
-                prgDialog.hide();
-                // When Http response code is '404'
-                if (statusCode == 404) {
-                    Toast.makeText(getApplicationContext(), "Requested resource not found", Toast.LENGTH_LONG).show();
-                }
-                // When Http response code is '500'
-                else if (statusCode == 500) {
-                    Toast.makeText(getApplicationContext(), "Something went wrong at server end", Toast.LENGTH_LONG).show();
-                }
-                // When Http response code other than 404, 500
-                else {
-                    Toast.makeText(getApplicationContext(), "Posting failed", Toast.LENGTH_LONG).show();
-                    // Toast.makeText(getApplicationContext(), "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
-                }
-                super.onFailure(statusCode, headers, throwable, errorResponse);
-            }
-
-        });
-    }
+        }
 
     public void onItemSelected(AdapterView<?> parent, View view,
                                int pos, long id) {
@@ -352,7 +365,12 @@ public class PostingActivity extends ActionBarActivity implements AdapterView.On
                 cursor.moveToFirst();
 
                 int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+
+
+
+
                 imgDecodableString = cursor.getString(columnIndex);
+                image_url = imgDecodableString;
                 cursor.close();
                 ImageButton image = (ImageButton) findViewById(R.id.imageButton);
                 // Set the Image in ImageView after decoding the String

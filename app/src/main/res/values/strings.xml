@@ -14,7 +14,7 @@
     <string name="title_activity_developer">DeveloperActivity</string>
     <string name="action_contact">Contact</string>
 
-    <string name="about_developer">Opennews merupakan aplikasi portal berita versi mobile dari OPENETIZEN</string>
+    <string name="about_developer">OpenNews merupakan aplikasi portal berita versi mobile dari OPENETIZEN</string>
     <string name="about">Opennews merupakan aplikasi portal berita</string>
 
     <string name="alamat">Cokrodiningratan, Jetis, Yogyakarta</string>
@@ -113,7 +113,7 @@
     <string name="title_dialog">Apakah anda memiliki akun publisher Opennews?</string>
     <string name="title_dialog_discard">Apakah akan membatalkan unggahan?</string>
     <string name="title_dialog_delete">Apakah anda yakin akan menghapus artikel ini?</string>
-    <string name="title_dialog_logut">Apakah anda yakin ingin keluar?</string>
+    <string name="title_dialog_logout">Apakah anda yakin ingin keluar?</string>
     <string name="yes">Iya</string>
     <string name="no">Tidak</string>
     <string name="content_dialog">Login hanya bisa diakses oleh pemilik akun Publisher yang telah terdaftar pada sistem sebelumnya</string>

@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.TaskStackBuilder;
@@ -13,6 +15,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +30,11 @@ import com.openetizen.cevysays.opennews.fragments.NavigationDrawerFragment;
 import com.openetizen.cevysays.opennews.fragments.NavigationDrawerFragmentUser;
 import com.openetizen.cevysays.opennews.fragments.PromotionFragment;
 import com.openetizen.cevysays.opennews.util.NavigationDrawerCallbacks;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 
 public class MainActivity extends ActionBarActivity
@@ -54,6 +62,10 @@ public class MainActivity extends ActionBarActivity
 
         if (sharedPreferences.getBoolean("login", false)) {
             setContentView(R.layout.activity_main_activity_user);
+            if (android.os.Build.VERSION.SDK_INT > 9) {
+                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                StrictMode.setThreadPolicy(policy);
+            }
         } else {
             setContentView(R.layout.activity_main);
 
@@ -102,10 +114,12 @@ public class MainActivity extends ActionBarActivity
 
         if (sharedPreferences.getBoolean("login", false)) {
             // user login
+            Log.e("isi", sharedPreferences.getString("loginImage", ""));
             mNavigationDrawerFragmentUser = (NavigationDrawerFragmentUser)
                     getFragmentManager().findFragmentById(R.id.fragment_drawer_user);
             mNavigationDrawerFragmentUser.setup(R.id.fragment_drawer_user, (DrawerLayout) findViewById(R.id.drawer), mToolbar);
-            mNavigationDrawerFragmentUser.setUserData(sharedPreferences.getString("loginName", ""), sharedPreferences.getString("loginEmail", ""), BitmapFactory.decodeResource(getResources(), R.drawable.ic_person_black_18dp));
+            mNavigationDrawerFragmentUser.setUserData(sharedPreferences.getString("loginName", ""), sharedPreferences.getString("loginEmail", ""), getBitmapFromURL("http://openetizen.com" + sharedPreferences.getString("loginImage", "")));
+
 
         } else {
             // user dereng login
@@ -230,7 +244,7 @@ public class MainActivity extends ActionBarActivity
     public void logoutButton(View view) {
         AlertDialog.Builder builder =
                 new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
-        builder.setTitle(R.string.title_dialog_delete);
+        builder.setTitle(R.string.title_dialog_logout);
         builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -355,6 +369,21 @@ public class MainActivity extends ActionBarActivity
         }
 
     }*/
+
+    public static Bitmap getBitmapFromURL(String src) {
+        try {
+            URL url = new URL(src);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            return myBitmap;
+        } catch (IOException e) {
+            // Log exception
+            return null;
+        }
+    }
 
 
 }

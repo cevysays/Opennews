@@ -186,11 +186,10 @@ public class GalleryFragment extends Fragment {
             GridItem item;
             for (int i = 0; i < posts.length(); i++) {
                 JSONObject post = posts.optJSONObject(i);
-                String title = post.optString("name");
+                String title = post.optString("description");
                 item = new GridItem();
                 item.setTitle(title);
 
-//                JSONObject picture = posts.optJSONObject(i).optJSONObject("picture").optJSONObject("image").optJSONObject("url");
                 JSONArray picture = response.optJSONArray("album");
                 JSONObject images = picture.getJSONObject(i);
                 String image = images.getJSONObject("cover").getJSONObject("photo").getJSONObject("full").getString("url");
@@ -199,13 +198,6 @@ public class GalleryFragment extends Fragment {
                 item.setImage("http://openetizen.com" + image.toString());
                 Log.d("foto", image.toString());
 
-//
-//                JSONArray attachments = post.getJSONArray("attachments");
-//                if (null != attachments && attachments.length() > 0) {
-//                    JSONObject attachment = attachments.getJSONObject(0);
-//                    if (attachment != null)
-//                        item.setImage(attachment.getString("url"));
-//                }
                 mGridData.add(item);
             }
         } catch (JSONException e) {

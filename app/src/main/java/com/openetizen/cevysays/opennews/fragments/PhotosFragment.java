@@ -187,17 +187,8 @@ public class PhotosFragment extends android.support.v4.app.Fragment {
                 item = new GridItem();
                 item.setTitle(title);
                 String image = post.getJSONObject("pict").getJSONObject("photo").getJSONObject("full").optString("url"); //images.getJSONObject("cover").getJSONObject("photo").getJSONObject("thumb").getString("url");
-                //Log.d("cover", images.getJSONObject("cover").getJSONObject("photo").getJSONObject("thumb").getString("url"));
                 item.setImage("http://openetizen.com" + image.toString());
-                //Log.d("foto", image.toString());
 
-//
-//                JSONArray attachments = post.getJSONArray("attachments");
-//                if (null != attachments && attachments.length() > 0) {
-//                    JSONObject attachment = attachments.getJSONObject(0);
-//                    if (attachment != null)
-//                        item.setImage(attachment.getString("url"));
-//                }
                 mGridData.add(item);
             }
         } catch (JSONException e) {
