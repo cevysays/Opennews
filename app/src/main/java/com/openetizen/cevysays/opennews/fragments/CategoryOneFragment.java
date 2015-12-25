@@ -68,8 +68,8 @@ public class CategoryOneFragment extends Fragment implements AdapterView.OnItemC
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_category_one, container, false);
         toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar_actionbar);
-        toolbar.setTitle("Berita");
-        getActivity().setTitle("Berita");
+        toolbar.setTitle("Beranda");
+        getActivity().setTitle("Beranda");
         sharedpreferences = getActivity().getSharedPreferences(MyPREFERENCES,
                 Context.MODE_PRIVATE);
 

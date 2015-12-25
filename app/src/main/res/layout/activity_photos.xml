@@ -35,52 +35,53 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:visibility="gone" />
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
 
-        <com.github.clans.fab.FloatingActionMenu
-            android:id="@+id/uploadFoto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:clickable="true"
-            android:onClick="uploadPhoto"
-            app:menu_animationDelayPerItem="50"
-            app:menu_backgroundColor="@android:color/transparent"
-            app:menu_buttonSpacing="0dp"
-            app:menu_colorNormal="#1a237e"
-            app:menu_colorPressed="#1a237e"
-            app:menu_colorRipple="#99FFFFFF"
-            app:menu_fab_label="@null"
-            app:menu_fab_size="normal"
-            app:menu_icon="@drawable/ic_add_a_photo_white_18dp"
-            app:menu_labels_colorNormal="#88FFFFFF"
-            app:menu_labels_colorPressed="#99FFFFFF"
-            app:menu_labels_colorRipple="#66FFFFFF"
-            app:menu_labels_cornerRadius="3dp"
-            app:menu_labels_ellipsize="none"
-            app:menu_labels_margin="0dp"
-            app:menu_labels_maxLines="-1"
-            app:menu_labels_padding="8dp"
-            app:menu_labels_paddingBottom="4dp"
-            app:menu_labels_paddingLeft="8dp"
-            app:menu_labels_paddingRight="8dp"
-            app:menu_labels_paddingTop="4dp"
-            app:menu_labels_showShadow="true"
-            app:menu_labels_singleLine="false"
-            app:menu_labels_textColor="#444444"
-            app:menu_labels_textSize="14sp"
-            app:menu_openDirection="up"
-            app:menu_shadowColor="#66000000"
-            app:menu_shadowRadius="4dp"
-            app:menu_shadowXOffset="1dp"
-            app:menu_shadowYOffset="3dp"
-            app:menu_showShadow="true">
+    <!--<RelativeLayout-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content">-->
+
+        <!--<com.github.clans.fab.FloatingActionMenu-->
+            <!--android:id="@+id/uploadFoto"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignParentBottom="true"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:layout_marginBottom="10dp"-->
+            <!--android:layout_marginLeft="10dp"-->
+            <!--android:layout_marginRight="10dp"-->
+            <!--android:clickable="true"-->
+            <!--android:onClick="uploadPhoto"-->
+            <!--app:menu_animationDelayPerItem="50"-->
+            <!--app:menu_backgroundColor="@android:color/transparent"-->
+            <!--app:menu_buttonSpacing="0dp"-->
+            <!--app:menu_colorNormal="#1a237e"-->
+            <!--app:menu_colorPressed="#1a237e"-->
+            <!--app:menu_colorRipple="#99FFFFFF"-->
+            <!--app:menu_fab_label="@null"-->
+            <!--app:menu_fab_size="normal"-->
+            <!--app:menu_icon="@drawable/ic_add_a_photo_white_18dp"-->
+            <!--app:menu_labels_colorNormal="#88FFFFFF"-->
+            <!--app:menu_labels_colorPressed="#99FFFFFF"-->
+            <!--app:menu_labels_colorRipple="#66FFFFFF"-->
+            <!--app:menu_labels_cornerRadius="3dp"-->
+            <!--app:menu_labels_ellipsize="none"-->
+            <!--app:menu_labels_margin="0dp"-->
+            <!--app:menu_labels_maxLines="-1"-->
+            <!--app:menu_labels_padding="8dp"-->
+            <!--app:menu_labels_paddingBottom="4dp"-->
+            <!--app:menu_labels_paddingLeft="8dp"-->
+            <!--app:menu_labels_paddingRight="8dp"-->
+            <!--app:menu_labels_paddingTop="4dp"-->
+            <!--app:menu_labels_showShadow="true"-->
+            <!--app:menu_labels_singleLine="false"-->
+            <!--app:menu_labels_textColor="#444444"-->
+            <!--app:menu_labels_textSize="14sp"-->
+            <!--app:menu_openDirection="up"-->
+            <!--app:menu_shadowColor="#66000000"-->
+            <!--app:menu_shadowRadius="4dp"-->
+            <!--app:menu_shadowXOffset="1dp"-->
+            <!--app:menu_shadowYOffset="3dp"-->
+            <!--app:menu_showShadow="true">-->
 
             <!--<com.github.clans.fab.FloatingActionButton-->
                 <!--android:id="@+id/menu_upload"-->
@@ -94,7 +95,7 @@
                 <!--app:fab_size="mini" />-->
 
 
-        </com.github.clans.fab.FloatingActionMenu>
-    </RelativeLayout>
+        <!--</com.github.clans.fab.FloatingActionMenu>-->
+    <!--</RelativeLayout>-->
 
 </RelativeLayout>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.openetizen.cevysays.opennews">
+    package="com.openetizen.cevysays.opennews" >
 
     <!-- &lt;!&ndash; To access Google+ APIs: &ndash;&gt; -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -28,8 +28,8 @@
         android:allowBackup="true"
         android:icon="@drawable/icon_opennews"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
-        <activity android:name=".activity.SplashScreen">
+        android:theme="@style/AppTheme" >
+        <activity android:name=".activity.SplashScreen" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -41,7 +41,7 @@
             android:label="@string/app_name" />
         <activity
             android:name=".activity.LoginActivity"
-            android:label="@string/title_activity_login">
+            android:label="@string/title_activity_login" >
 
             <!-- android:windowSoftInputMode="adjustResize|stateHidden" > -->
         </activity>
@@ -66,7 +66,7 @@
         <activity
             android:name=".activity.DetailPostActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppThemes">
+            android:theme="@style/AppThemes" >
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
@@ -101,8 +101,9 @@
         <activity
             android:name=".activity.MapsActivity"
             android:label="@string/title_activity_maps" />
-        <activity android:name=".activity.PhotosActivity"
-            android:label="@string/title_activity_photos"></activity>
+        <activity
+            android:name=".activity.PhotosActivity"
+            android:label="@string/title_activity_photos" />
     </application>
 
 </manifest>

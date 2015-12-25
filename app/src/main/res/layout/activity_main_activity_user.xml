@@ -73,16 +73,16 @@
             app:menu_shadowYOffset="3dp"
             app:menu_showShadow="true">
 
-            <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/menu_upload"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="uploadPhoto"
-                android:src="@drawable/ic_add_a_photo_white_18dp"
-                app:fab_colorNormal="@color/myPrimaryColor"
-                app:fab_colorPressed="@color/myPrimaryColor"
-                app:fab_label="Unggah Foto"
-                app:fab_size="mini" />
+            <!--<com.github.clans.fab.FloatingActionButton-->
+                <!--android:id="@+id/menu_upload"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:onClick="uploadPhoto"-->
+                <!--android:src="@drawable/ic_add_a_photo_white_18dp"-->
+                <!--app:fab_colorNormal="@color/myPrimaryColor"-->
+                <!--app:fab_colorPressed="@color/myPrimaryColor"-->
+                <!--app:fab_label="Unggah Foto"-->
+                <!--app:fab_size="mini" />-->
 
             <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/menu_article"

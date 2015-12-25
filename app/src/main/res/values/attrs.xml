@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="ScrimInsetsView">
-        <attr name="insetForeground" format="reference|color" />
+        <attr name="insettForeground" format="reference|color" />
     </declare-styleable>
     <declare-styleable name="JustifiedTextView">
         <attr name="text" format="reference" />

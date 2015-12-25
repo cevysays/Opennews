@@ -226,15 +226,15 @@ public class LoginActivity extends ActionBarActivity {
                         SharedPreferences.Editor editor = sharedpreferences.edit();
                         editor.putBoolean("login", true);
 //                        Log.e("Response", new String(jsonObject));
-                        editor.putString("loginName", obj.getJSONObject("data").getString("username"));           //nanti diganti "name" nek backend nya udah siap
+                        editor.putString("loginName", obj.getJSONObject("data").getJSONObject("user").getString("name"));           //nanti diganti "name" nek backend nya udah siap
 //                        editor.putString("loginEmail", obj.getJSONObject("data").getJSONObject("user").getString("email"));
                         editor.putString("loginPass", pwdUser.getText().toString());
-                        editor.putString("loginImage", obj.getJSONObject("data").getString("image"));
+                        editor.putString("loginImage", obj.getJSONObject("data").getJSONObject("user").getString("image_url"));
                         editor.putInt("loginUserID", obj.getJSONObject("data").getJSONObject("user").getInt("id"));
                         editor.commit();
 
                         Intent i = new Intent(LoginActivity.this, MainActivity.class);
-                        i.putExtra("login_name", obj.getJSONObject("data").getString("username"));
+                        i.putExtra("login_name", obj.getJSONObject("data").getJSONObject("user").getString("name"));
                         startActivity(i);
                         finish();
                     } else {
@@ -269,7 +269,7 @@ public class LoginActivity extends ActionBarActivity {
                 }
                 // When Http response code other than 404, 500
                 else {
-                    Toast.makeText(getApplicationContext(), "Posting failed", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Alamat email dan password tidak cocok", Toast.LENGTH_LONG).show();
                     // Toast.makeText(getApplicationContext(), "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
                 }
                 super.onFailure(statusCode, headers, throwable, errorResponse);

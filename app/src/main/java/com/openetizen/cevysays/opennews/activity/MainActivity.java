@@ -26,8 +26,10 @@ import com.openetizen.cevysays.opennews.fragments.AgendaFragment;
 import com.openetizen.cevysays.opennews.fragments.CategoryOneFragment;
 import com.openetizen.cevysays.opennews.fragments.GalleryFragment;
 import com.openetizen.cevysays.opennews.fragments.HistoryFragment;
+import com.openetizen.cevysays.opennews.fragments.MyGalleryFragment;
 import com.openetizen.cevysays.opennews.fragments.NavigationDrawerFragment;
 import com.openetizen.cevysays.opennews.fragments.NavigationDrawerFragmentUser;
+import com.openetizen.cevysays.opennews.fragments.NewsFragment;
 import com.openetizen.cevysays.opennews.fragments.PromotionFragment;
 import com.openetizen.cevysays.opennews.util.NavigationDrawerCallbacks;
 
@@ -201,29 +203,42 @@ public class MainActivity extends ActionBarActivity
                 //getSupportActionBar().setTitle(R.string.title_news);
                 break;
             case 1:
+                transaction.replace(R.id.container, new NewsFragment());
+                transaction.setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                transaction.commit();
+                getSupportActionBar().setTitle(R.string.title_news);
+
+                break;
+            case 2:
                 transaction.replace(R.id.container, new AgendaFragment());
                 transaction.setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.commit();
                 getSupportActionBar().setTitle(R.string.title_agenda);
 
                 break;
-            case 2:
+            case 3:
                 transaction.replace(R.id.container, new PromotionFragment());
                 transaction.setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.commit();
                 getSupportActionBar().setTitle(R.string.title_promotion);
                 break;
-            case 3:
+            case 4:
                 transaction.replace(R.id.container, new GalleryFragment());
                 transaction.setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.commit();
                 getSupportActionBar().setTitle(R.string.title_gallery);
                 break;
-            case 4:
+            case 5:
                 transaction.replace(R.id.container, new HistoryFragment());
                 transaction.setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.commit();
                 getSupportActionBar().setTitle(R.string.title_history);
+                break;
+            case 6:
+                transaction.replace(R.id.container, new MyGalleryFragment());
+                transaction.setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                transaction.commit();
+                getSupportActionBar().setTitle(R.string.title_my_gallery);
                 break;
 
             default:
