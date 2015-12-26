@@ -1,5 +1,7 @@
 package com.openetizen.cevysays.opennews.activity;
 
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,8 +21,17 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.openetizen.cevysays.opennews.R;
 import com.openetizen.cevysays.opennews.fragments.AgendaFragment;
 import com.openetizen.cevysays.opennews.fragments.CategoryOneFragment;
@@ -33,10 +44,15 @@ import com.openetizen.cevysays.opennews.fragments.NewsFragment;
 import com.openetizen.cevysays.opennews.fragments.PromotionFragment;
 import com.openetizen.cevysays.opennews.util.NavigationDrawerCallbacks;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import cz.msebera.android.httpclient.Header;
 
 
 public class MainActivity extends ActionBarActivity
@@ -48,10 +64,18 @@ public class MainActivity extends ActionBarActivity
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private NavigationDrawerFragmentUser mNavigationDrawerFragmentUser;
     private Toolbar mToolbar;
+//    public static final String MyPREFERENCES = "MyPrefs";
+//    static SharedPreferences sharedpreferences;
+
+    private String menuFragment = "";
+
+    private FloatingActionButton menu_article;
 
     Bundle bundle = new Bundle();
 
     private SharedPreferences sharedPreferences;
+
+    ProgressDialog prgDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +88,102 @@ public class MainActivity extends ActionBarActivity
 
         if (sharedPreferences.getBoolean("login", false)) {
             setContentView(R.layout.activity_main_activity_user);
+
+            prgDialog = new ProgressDialog(this);
+            // Set Progress Dialog Text
+            prgDialog.setMessage("Mohon menunggu...");
+            // Set Cancelable as False
+            prgDialog.setCancelable(false);
+
+
+            menu_article = (FloatingActionButton) findViewById(R.id.menu);
+            //menu_article.setIconAnimated(false);
+            menu_article.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(menuFragment =="MyGallery") {
+                        final Dialog dialog = new Dialog(MainActivity.this);
+                        dialog.setContentView(R.layout.addgallery_dialog);
+                        dialog.setTitle("Buat Album Baru");
+                        dialog.show();
+                        final EditText nameGallery = (EditText) dialog.findViewById(R.id.namaGaleri);
+                        final EditText deskripsiGallery = (EditText) dialog.findViewById(R.id.deskripsiGaleri);
+                        Button batal = (Button) dialog.findViewById(R.id.batalButton);
+                        batal.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dialog.dismiss();
+                            }
+                        });
+                        Button buat = (Button) dialog.findViewById(R.id.buatButton);
+                        buat.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                prgDialog.show();
+
+                                RequestParams params = new RequestParams();
+                                params.put("album[user_id]", sharedPreferences.getInt("loginUserID", 0));
+                                params.put("album[name]", nameGallery.getText().toString());
+                                params.put("album[description]", deskripsiGallery.getText().toString());
+
+                                AsyncHttpClient client = new AsyncHttpClient();
+                                client.post("http://openetizen.com/api/v1/albums", params, new AsyncHttpResponseHandler() {
+
+                                            @Override
+                                            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                                                prgDialog.hide();
+                                                try {
+                                                    JSONObject obj = new JSONObject(new String(responseBody));
+                                                    if (obj.getString("status").equalsIgnoreCase("success")) {
+                                                        Log.e("result", obj.toString());
+                                                        Toast.makeText(getApplicationContext(), "Galeri berhasil dibuat!", Toast.LENGTH_LONG).show();
+                                                        dialog.dismiss();
+                                                    } else {
+                                                        Toast.makeText(getApplicationContext(), obj.getString("error_msg"), Toast.LENGTH_LONG).show();
+                                                    }
+
+                                                } catch (JSONException e) {
+                                                    // TODO Auto-generated catch block
+                                                    Toast.makeText(getApplicationContext(), "Error Occured [Server's JSON response might be invalid]!", Toast.LENGTH_LONG).show();
+                                                    e.printStackTrace();
+                                                    Log.e("ERROR", "Response");
+
+
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                                                Log.e("errorResponse", /*responseBody.toString()*/  "  " + statusCode);
+
+                                                prgDialog.hide();
+                                                // When Http response code is '404'
+                                                if (statusCode == 404) {
+                                                    Toast.makeText(getApplicationContext(), "Requested resource not found", Toast.LENGTH_LONG).show();
+                                                }
+                                                // When Http response code is '500'
+                                                else if (statusCode == 500) {
+                                                    Toast.makeText(getApplicationContext(), "Something went wrong at server end", Toast.LENGTH_LONG).show();
+                                                }
+                                                // When Http response code other than 404, 500
+                                                else {
+                                                    Toast.makeText(getApplicationContext(), "Posting failed", Toast.LENGTH_LONG).show();
+                                                    // Toast.makeText(getApplicationContext(), "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
+                                                }
+                                            }
+
+                                        }
+
+                                );
+                            }
+                        });
+                    }else{
+                        Intent i = new Intent(MainActivity.this, PostingActivity.class);
+                        startActivity(i);
+                    }
+                }
+            });
             if (android.os.Build.VERSION.SDK_INT > 9) {
                 StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                 StrictMode.setThreadPolicy(policy);
@@ -200,6 +320,10 @@ public class MainActivity extends ActionBarActivity
                 transaction.replace(R.id.container, new CategoryOneFragment());
                 transaction.setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.commit();
+                if(menuFragment=="MyGallery") {
+                    menu_article.setImageResource(R.drawable.ic_create_white_24dp);
+                    menuFragment = "";
+                }
                 //getSupportActionBar().setTitle(R.string.title_news);
                 break;
             case 1:
@@ -207,6 +331,10 @@ public class MainActivity extends ActionBarActivity
                 transaction.setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.commit();
                 getSupportActionBar().setTitle(R.string.title_news);
+                if(menuFragment=="MyGallery") {
+                    menu_article.setImageResource(R.drawable.ic_create_white_24dp);
+                    menuFragment = "";
+                }
 
                 break;
             case 2:
@@ -214,6 +342,10 @@ public class MainActivity extends ActionBarActivity
                 transaction.setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.commit();
                 getSupportActionBar().setTitle(R.string.title_agenda);
+                if(menuFragment=="MyGallery") {
+                    menu_article.setImageResource(R.drawable.ic_create_white_24dp);
+                    menuFragment = "";
+                }
 
                 break;
             case 3:
@@ -221,24 +353,38 @@ public class MainActivity extends ActionBarActivity
                 transaction.setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.commit();
                 getSupportActionBar().setTitle(R.string.title_promotion);
+                if(menuFragment=="MyGallery") {
+                    menu_article.setImageResource(R.drawable.ic_create_white_24dp);
+                    menuFragment = "";
+                }
                 break;
             case 4:
                 transaction.replace(R.id.container, new GalleryFragment());
                 transaction.setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.commit();
                 getSupportActionBar().setTitle(R.string.title_gallery);
+                if(menuFragment=="MyGallery") {
+                    menu_article.setImageResource(R.drawable.ic_create_white_24dp);
+                    menuFragment = "";
+                }
                 break;
             case 5:
                 transaction.replace(R.id.container, new HistoryFragment());
                 transaction.setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.commit();
                 getSupportActionBar().setTitle(R.string.title_history);
+                if(menuFragment=="MyGallery") {
+                    menu_article.setImageResource(R.drawable.ic_create_white_24dp);
+                    menuFragment = "";
+                }
                 break;
             case 6:
                 transaction.replace(R.id.container, new MyGalleryFragment());
                 transaction.setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.commit();
                 getSupportActionBar().setTitle(R.string.title_my_gallery);
+                menu_article.setImageResource(R.drawable.ic_add_to_photos_white_24dp);
+                menuFragment = "MyGallery";
                 break;
 
             default:
@@ -246,9 +392,9 @@ public class MainActivity extends ActionBarActivity
         }
     }
 
-    public void createArticle(View view) {
-        Intent i = new Intent(this, PostingActivity.class);
-        startActivity(i);
+    public void actionMenu(View view) {
+
+
     }
 
     public void uploadPhoto(View view) {

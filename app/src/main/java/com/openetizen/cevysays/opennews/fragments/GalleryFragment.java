@@ -2,7 +2,9 @@ package com.openetizen.cevysays.opennews.fragments;
 
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -16,10 +18,17 @@ import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.openetizen.cevysays.opennews.R;
 import com.openetizen.cevysays.opennews.activity.PhotosActivity;
+import com.openetizen.cevysays.opennews.adapters.CategoryOneAdapter;
 import com.openetizen.cevysays.opennews.adapters.GridViewAdapter;
+import com.openetizen.cevysays.opennews.models.CategoryOneItem;
 import com.openetizen.cevysays.opennews.models.GridItem;
+import com.openetizen.cevysays.opennews.util.Utils;
+import com.twotoasters.jazzylistview.JazzyHelper;
+import com.twotoasters.jazzylistview.JazzyListView;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -35,6 +44,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+import cz.msebera.android.httpclient.Header;
 import jp.co.recruit_lifestyle.android.widget.WaveSwipeRefreshLayout;
 
 /**
@@ -92,12 +102,12 @@ public class GalleryFragment extends Fragment {
             public void onRefresh() {
                 // Do work to refresh the list here.
                 mGridData = new ArrayList<>();
-                new AsyncHttpTask().execute(FEED_URL);
+                getData(true);
             }
         });
 
-        //Start download
-        new AsyncHttpTask().execute(FEED_URL);
+        getData(false);
+
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 Log.e("album_ID",""+mGridData.get(position).getAlbum_ID());
@@ -116,48 +126,122 @@ public class GalleryFragment extends Fragment {
 
 
     //Downloading data asynchronously
-    public class AsyncHttpTask extends AsyncTask<String, Void, Integer> {
+//    public class AsyncHttpTask extends AsyncTask<String, Void, Integer> {
+//
+//        private int statusCode = 0;
+//
+//        @Override
+//        protected Integer doInBackground(String... params) {
+//            Integer result = 0;
+//            try {
+//                // Create Apache HttpClient
+//                HttpClient httpclient = new DefaultHttpClient();
+//                HttpResponse httpResponse = httpclient.execute(new HttpGet(params[0]));
+//                statusCode = httpResponse.getStatusLine().getStatusCode();
+//
+//                // 200 represents HTTP OK
+//                if (statusCode == 200) {
+//                    Toast.makeText(getActivity().getBaseContext(),"SUCCESS",Toast.LENGTH_SHORT).show();
+//                    String response = streamToString(httpResponse.getEntity().getContent());
+//                    parseResult(response);
+//                    result = 1; // Successful
+//                } else {
+//                    Toast.makeText(getActivity().getBaseContext(),"GAGAL",Toast.LENGTH_SHORT).show();
+//                    result = 0; //"Failed
+//                }
+//            } catch (Exception e) {
+//                Log.d(TAG, e.getLocalizedMessage());
+//            }
+//
+//            return result;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Integer result) {
+//            // Download complete. Lets update UI
+//
+//            if (result == 1) {
+//                mWaveSwipeRefreshLayout.setRefreshing(false);
+//                mGridAdapter.setGridData(mGridData);
+//            } else {
+//                Toast.makeText(getActivity(), statusCode+"", Toast.LENGTH_SHORT).show();
+//            }
+//
+//            //Hide progressbar
+//            mProgressBar.setVisibility(View.GONE);
+//        }
+//    }
 
-        @Override
-        protected Integer doInBackground(String... params) {
-            Integer result = 0;
-            try {
-                // Create Apache HttpClient
-                HttpClient httpclient = new DefaultHttpClient();
-                HttpResponse httpResponse = httpclient.execute(new HttpGet(params[0]));
-                int statusCode = httpResponse.getStatusLine().getStatusCode();
+    // copas
+    private void getData(final boolean isRefresh) {
 
-                // 200 represents HTTP OK
-                if (statusCode == 200) {
-                    String response = streamToString(httpResponse.getEntity().getContent());
-                    parseResult(response);
-                    result = 1; // Successful
-                } else {
-                    result = 0; //"Failed
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.get("http://openetizen.com/api/v1/albums", null, new JsonHttpResponseHandler() {
+
+            ProgressDialog progress;
+
+
+            @Override
+            public void onFinish() {
+                super.onFinish();
+                if (!isRefresh) {
+                    progress.dismiss();
                 }
-            } catch (Exception e) {
-                Log.d(TAG, e.getLocalizedMessage());
             }
 
-            return result;
-        }
+            @Override
+            public void onStart() {
+                super.onStart();
+                if (!isRefresh) {
+                    progress = ProgressDialog.show(getActivity(), "",
+                            "Memuat data...", true);
+                }
 
-        @Override
-        protected void onPostExecute(Integer result) {
-            // Download complete. Lets update UI
+            }
 
-            if (result == 1) {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject jsonObject) {
+                // Pull out the first event on the public timeline
                 mWaveSwipeRefreshLayout.setRefreshing(false);
+                Log.e("Coba", "KELUAR");
+//                JSONArray openArray null;
+//                JSONObject openObject = null;
+                String test = "";
+                try {
+                    JSONObject response = jsonObject;
+                    JSONArray posts = response.optJSONArray("album");
+                    GridItem item;
+                    for (int i = 0; i < posts.length(); i++) {
+                        JSONObject post = posts.optJSONObject(i);
+                        String title = post.optString("description");
+                        item = new GridItem();
+                        item.setTitle(title);
+
+                        JSONArray picture = response.optJSONArray("album");
+                        JSONObject images = picture.getJSONObject(i);
+                        if(images.get("cover")!=null) {
+                            String image = images.getJSONObject("cover").getJSONObject("photo").getJSONObject("full").getString("url");
+                            item.setImage("http://openetizen.com" + image.toString());
+                            Log.d("foto", image.toString());
+                        }
+                        item.setAlbum_ID(images.getJSONObject("cover").getInt("album_id"));
+                        Log.d("cover", images.getJSONObject("cover").getJSONObject("photo").getJSONObject("full").getString("url"));
+
+
+
+                        mGridData.add(item);
+                    }
+                } catch (JSONException e) {
+                    Log.e("ERROR",e.getMessage());
+                }
+
                 mGridAdapter.setGridData(mGridData);
-            } else {
-                Toast.makeText(getActivity(), "Failed to fetch data!", Toast.LENGTH_SHORT).show();
+
+
+
             }
-
-            //Hide progressbar
-            mProgressBar.setVisibility(View.GONE);
-        }
+        });
     }
-
 
     String streamToString(InputStream stream) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));

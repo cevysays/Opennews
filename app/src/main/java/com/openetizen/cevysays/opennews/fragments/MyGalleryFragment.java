@@ -2,7 +2,9 @@ package com.openetizen.cevysays.opennews.fragments;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -47,6 +49,8 @@ public class MyGalleryFragment extends android.support.v4.app.Fragment {
 
     private GridView mGridView;
     private ProgressBar mProgressBar;
+    public static final String MyPREFERENCES = "MyPrefs";
+    static SharedPreferences sharedpreferences;
 
     private GridViewAdapter mGridAdapter;
     private ArrayList<GridItem> mGridData;
@@ -74,6 +78,8 @@ public class MyGalleryFragment extends android.support.v4.app.Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_gallery, container, false);
+        sharedpreferences = getActivity().getSharedPreferences(MyPREFERENCES,
+                Context.MODE_PRIVATE);
 
         mGridView = (GridView) rootView.findViewById(R.id.gridView);
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
@@ -104,8 +110,8 @@ public class MyGalleryFragment extends android.support.v4.app.Fragment {
                 /*bundle.putInt("album_ID",mGridData.get(position).getAlbum_ID());
                 ((MainActivity) getActivity()).replaceFragments(new PhotosFragment(),bundle);*/
                 Intent i = new Intent(getActivity(), PhotosActivity.class);
-                i.putExtra("album_ID",mGridData.get(position).getAlbum_ID());
-                i.putExtra("album_Name",mGridData.get(position).getTitle());
+                i.putExtra("album_ID", mGridData.get(position).getAlbum_ID());
+                i.putExtra("album_Name", mGridData.get(position).getTitle());
                 startActivity(i);
             }
         });
@@ -192,20 +198,20 @@ public class MyGalleryFragment extends android.support.v4.app.Fragment {
 
                 JSONArray picture = response.optJSONArray("album");
                 JSONObject images = picture.getJSONObject(i);
-                String image = images.getJSONObject("cover").getJSONObject("photo").getJSONObject("full").getString("url");
-                item.setAlbum_ID(images.getJSONObject("cover").getInt("album_id"));
-                Log.d("cover", images.getJSONObject("cover").getJSONObject("photo").getJSONObject("full").getString("url"));
-                item.setImage("http://openetizen.com" + image.toString());
-                Log.d("foto", image.toString());
+                if (images.getInt("user_id") == sharedpreferences.getInt("loginUserID", 0)) {
+                    String image = images.getJSONObject("cover").getJSONObject("photo").getJSONObject("full").getString("url");
+                    item.setAlbum_ID(images.getJSONObject("cover").getInt("album_id"));
+                    Log.d("cover", images.getJSONObject("cover").getJSONObject("photo").getJSONObject("full").getString("url"));
+                    item.setImage("http://openetizen.com" + image.toString());
+                    Log.d("foto", image.toString());
 
-                mGridData.add(item);
+                    mGridData.add(item);
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
-
-
 
 
 }
