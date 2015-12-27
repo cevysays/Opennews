@@ -1,10 +1,12 @@
 package com.openetizen.cevysays.opennews.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -17,6 +19,9 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.github.clans.fab.FloatingActionButton;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.openetizen.cevysays.opennews.R;
 import com.openetizen.cevysays.opennews.adapters.GridViewAdapter;
 import com.openetizen.cevysays.opennews.fragments.GalleryFragment;
@@ -34,7 +39,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.entity.StringEntity;
 
 public class PhotosActivity extends AppCompatActivity {
 
@@ -49,6 +58,9 @@ public class PhotosActivity extends AppCompatActivity {
     private ArrayList<GridItem> mGridData;
     private String FEED_URL = "http://openetizen.com/api/v1/albums/";
 
+    private FloatingActionButton menu_upload_photo;
+    int photo_ID = 0;
+
     private Bundle extras;
     private Toolbar mToolbar;
 
@@ -57,7 +69,7 @@ public class PhotosActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photos);
         extras = getIntent().getExtras();
-        FEED_URL+=extras.getInt("album_ID");
+        FEED_URL += extras.getInt("album_ID");
         mGridView = (GridView) findViewById(R.id.gridView);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         mGridData = new ArrayList<>();
@@ -107,6 +119,45 @@ public class PhotosActivity extends AppCompatActivity {
             }
         });
 
+        mGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int i, final long l) {
+
+                AlertDialog.Builder builder =
+                        new AlertDialog.Builder(PhotosActivity.this, R.style.AppCompatAlertDialogStyle);
+                builder.setTitle(R.string.title_dialog_delete_photo);
+                builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        deletePhoto(mGridData.get((int) l).getPhoto_ID(), (int) l);
+                    }
+                });
+                builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                });
+                builder.show();
+
+                return true;
+            }
+        });
+
+        menu_upload_photo = (FloatingActionButton) findViewById(R.id.uploadPhoto);
+        menu_upload_photo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(PhotosActivity.this, UploadPhotoActivity.class);
+                i.putExtra("album_ID", extras.getInt("album_ID"));
+                startActivity(i);
+
+            }
+        });
+
+        if (extras.getString("Fragment").equals("Gallery")) {
+            menu_upload_photo.setVisibility(View.GONE);
+        }
 
         //Start download
         new AsyncHttpTask().execute(FEED_URL);
@@ -183,6 +234,7 @@ public class PhotosActivity extends AppCompatActivity {
                 JSONObject post = posts.optJSONObject(i);
                 String title = post.optString("description");
                 item = new GridItem();
+                item.setPhoto_ID(post.optInt("photo_id"));
                 item.setTitle(title);
                 String image = post.getJSONObject("pict").getJSONObject("photo").getJSONObject("full").optString("url"); //images.getJSONObject("cover").getJSONObject("photo").getJSONObject("thumb").getString("url");
                 //Log.d("cover", images.getJSONObject("cover").getJSONObject("photo").getJSONObject("thumb").getString("url"));
@@ -201,5 +253,76 @@ public class PhotosActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private void deletePhoto(int photo_ID, final int position) {
+
+        mProgressBar.setVisibility(View.VISIBLE);
+
+        JSONObject jsonPosting = new JSONObject();
+        try {
+            //jsonPosting.put("album_id", extras.getInt("album_ID"));
+            jsonPosting.put("photo_id", photo_ID);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        StringEntity entity = null;
+        try {
+            entity = new StringEntity(jsonPosting.toString());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.delete(this, "http://openetizen.com/api/v1/albums/" + extras.getInt("album_ID") + "/photos", entity, "application/json", new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject jsonObject) {
+                // Hide Progress Dialog
+                mProgressBar.setVisibility(View.GONE);
+
+                try {
+                    JSONObject obj = new JSONObject(new String(String.valueOf(jsonObject)));
+                    Log.d("Opo", String.valueOf(jsonObject));
+                    mGridData.remove(position);
+                    mGridAdapter = new GridViewAdapter(PhotosActivity.this, R.layout.grid_item_layout, mGridData);
+                    mGridView.setAdapter(mGridAdapter);
+                    //invokeWS(json);
+                    Toast.makeText(getApplicationContext(), "Photo berhasil dihapus!", Toast.LENGTH_LONG).show();
+
+
+                } catch (JSONException e) {
+                    // TODO Auto-generated catch block
+                    Toast.makeText(getApplicationContext(), "Error Occured [Server's JSON response might be invalid]!", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                    Log.e("ERROR", "Response");
+                }
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                // Hide Progress Dialog
+
+                Log.e("errorResponse", errorResponse.toString() + "  " + statusCode);
+
+                mProgressBar.setVisibility(View.GONE);
+                // When Http response code is '404'
+                if (statusCode == 404) {
+                    Toast.makeText(getApplicationContext(), "Requested resource not found", Toast.LENGTH_LONG).show();
+                }
+                // When Http response code is '500'
+                else if (statusCode == 500) {
+                    Toast.makeText(getApplicationContext(), "Something went wrong at server end", Toast.LENGTH_LONG).show();
+                }
+                // When Http response code other than 404, 500
+                else {
+                    Toast.makeText(getApplicationContext(), "Posting failed", Toast.LENGTH_LONG).show();
+                    // Toast.makeText(getApplicationContext(), "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
+                }
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+            }
+
+        });
     }
 }

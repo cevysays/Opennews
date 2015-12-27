@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.FragmentManager;
@@ -240,7 +242,7 @@ public class MainActivity extends ActionBarActivity
             mNavigationDrawerFragmentUser = (NavigationDrawerFragmentUser)
                     getFragmentManager().findFragmentById(R.id.fragment_drawer_user);
             mNavigationDrawerFragmentUser.setup(R.id.fragment_drawer_user, (DrawerLayout) findViewById(R.id.drawer), mToolbar);
-            mNavigationDrawerFragmentUser.setUserData(sharedPreferences.getString("loginName", ""), sharedPreferences.getString("loginEmail", ""), getBitmapFromURL("http://openetizen.com" + sharedPreferences.getString("loginImage", "")));
+            mNavigationDrawerFragmentUser.setUserData(sharedPreferences.getString("loginName", ""), sharedPreferences.getString("loginEmail", ""), getBitmapFromURL(this, "http://openetizen.com" + sharedPreferences.getString("loginImage", "")));
 
 
         } else {
@@ -531,19 +533,32 @@ public class MainActivity extends ActionBarActivity
 
     }*/
 
-    public static Bitmap getBitmapFromURL(String src) {
+    public static Bitmap getBitmapFromURL(Context context, String src) {
+        Bitmap myBitmap=null;
         try {
             URL url = new URL(src);
+
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setDoInput(true);
             connection.connect();
-            InputStream input = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            if(isNetworkAvailable(context)) {
+                InputStream input = connection.getInputStream();
+                myBitmap = BitmapFactory.decodeStream(input);
+            }else{
+                myBitmap = BitmapFactory.decodeResource(context.getResources(),R.drawable.icon_opennews);
+            }
             return myBitmap;
         } catch (IOException e) {
-            // Log exception
-            return null;
+            myBitmap = BitmapFactory.decodeResource(context.getResources(),R.drawable.icon_opennews);
+            return myBitmap;
         }
+    }
+
+    public static boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
 

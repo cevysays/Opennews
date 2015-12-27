@@ -114,6 +114,8 @@
     <string name="title_dialog">Apakah anda memiliki akun publisher Opennews?</string>
     <string name="title_dialog_discard">Apakah akan membatalkan unggahan?</string>
     <string name="title_dialog_delete">Apakah anda yakin akan menghapus artikel ini?</string>
+    <string name="title_dialog_delete_album">Apakah anda yakin akan menghapus album ini?</string>
+    <string name="title_dialog_delete_photo">Apakah anda yakin akan menghapus album ini?</string>
     <string name="title_dialog_logout">Apakah anda yakin ingin keluar?</string>
     <string name="yes">Iya</string>
     <string name="no">Tidak</string>

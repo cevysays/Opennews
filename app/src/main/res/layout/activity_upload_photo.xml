@@ -30,12 +30,21 @@
             android:layout_marginBottom="20dp"
             android:text="Pilih dari galeri" />
 
+        <!--<ImageButton-->
+            <!--android:id="@+id/imageButton"-->
+            <!--android:layout_width="400dp"-->
+            <!--android:layout_height="200dp"-->
+            <!--android:layout_gravity="center_horizontal"-->
+            <!--android:onClick="imageUpload"-->
+            <!--android:src="@drawable/ic_add_a_photo_white_48dp" />-->
+
         <ImageButton
             android:id="@+id/imageButton"
             android:layout_width="400dp"
             android:layout_height="200dp"
             android:layout_gravity="center_horizontal"
             android:onClick="imageUpload"
+            android:scaleType="fitXY"
             android:src="@drawable/ic_add_a_photo_white_48dp" />
 
         <!--<Spinner-->
@@ -44,7 +53,7 @@
             <!--android:layout_height="wrap_content" />-->
 
         <EditText
-            android:id="@+id/Desc_photo"
+            android:id="@+id/photoDesc"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:hint="Deskripsi Foto" />

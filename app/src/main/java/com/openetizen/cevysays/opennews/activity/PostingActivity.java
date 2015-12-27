@@ -382,7 +382,7 @@ public class PostingActivity extends ActionBarActivity implements AdapterView.On
                         Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
-            Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG)
+            Toast.makeText(this, "Something went wrong"+"\n"+e.getLocalizedMessage(), Toast.LENGTH_LONG)
                     .show();
         }
 

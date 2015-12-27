@@ -116,7 +116,9 @@ public class GalleryFragment extends Fragment {
                 Intent i = new Intent(getActivity(), PhotosActivity.class);
                 i.putExtra("album_ID",mGridData.get(position).getAlbum_ID());
                 i.putExtra("album_Name",mGridData.get(position).getTitle());
+                i.putExtra("Fragment","Gallery");
                 startActivity(i);
+
             }
         });
         mProgressBar.setVisibility(View.VISIBLE);
@@ -125,54 +127,6 @@ public class GalleryFragment extends Fragment {
     }
 
 
-    //Downloading data asynchronously
-//    public class AsyncHttpTask extends AsyncTask<String, Void, Integer> {
-//
-//        private int statusCode = 0;
-//
-//        @Override
-//        protected Integer doInBackground(String... params) {
-//            Integer result = 0;
-//            try {
-//                // Create Apache HttpClient
-//                HttpClient httpclient = new DefaultHttpClient();
-//                HttpResponse httpResponse = httpclient.execute(new HttpGet(params[0]));
-//                statusCode = httpResponse.getStatusLine().getStatusCode();
-//
-//                // 200 represents HTTP OK
-//                if (statusCode == 200) {
-//                    Toast.makeText(getActivity().getBaseContext(),"SUCCESS",Toast.LENGTH_SHORT).show();
-//                    String response = streamToString(httpResponse.getEntity().getContent());
-//                    parseResult(response);
-//                    result = 1; // Successful
-//                } else {
-//                    Toast.makeText(getActivity().getBaseContext(),"GAGAL",Toast.LENGTH_SHORT).show();
-//                    result = 0; //"Failed
-//                }
-//            } catch (Exception e) {
-//                Log.d(TAG, e.getLocalizedMessage());
-//            }
-//
-//            return result;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Integer result) {
-//            // Download complete. Lets update UI
-//
-//            if (result == 1) {
-//                mWaveSwipeRefreshLayout.setRefreshing(false);
-//                mGridAdapter.setGridData(mGridData);
-//            } else {
-//                Toast.makeText(getActivity(), statusCode+"", Toast.LENGTH_SHORT).show();
-//            }
-//
-//            //Hide progressbar
-//            mProgressBar.setVisibility(View.GONE);
-//        }
-//    }
-
-    // copas
     private void getData(final boolean isRefresh) {
 
         AsyncHttpClient client = new AsyncHttpClient();
@@ -213,19 +167,19 @@ public class GalleryFragment extends Fragment {
                     GridItem item;
                     for (int i = 0; i < posts.length(); i++) {
                         JSONObject post = posts.optJSONObject(i);
-                        String title = post.optString("description");
+                        String title = post.optString("name");
                         item = new GridItem();
                         item.setTitle(title);
 
                         JSONArray picture = response.optJSONArray("album");
                         JSONObject images = picture.getJSONObject(i);
-                        if(images.get("cover")!=null) {
+                        if(images.get("cover")!=JSONObject.NULL) {
                             String image = images.getJSONObject("cover").getJSONObject("photo").getJSONObject("full").getString("url");
                             item.setImage("http://openetizen.com" + image.toString());
+                            Log.d("cover", images.getJSONObject("cover").getJSONObject("photo").getJSONObject("full").getString("url"));
                             Log.d("foto", image.toString());
                         }
-                        item.setAlbum_ID(images.getJSONObject("cover").getInt("album_id"));
-                        Log.d("cover", images.getJSONObject("cover").getJSONObject("photo").getJSONObject("full").getString("url"));
+                        item.setAlbum_ID(images.getInt("album_id"));
 
 
 
@@ -270,17 +224,20 @@ public class GalleryFragment extends Fragment {
             GridItem item;
             for (int i = 0; i < posts.length(); i++) {
                 JSONObject post = posts.optJSONObject(i);
-                String title = post.optString("description");
+                String title = post.optString("name");
                 item = new GridItem();
                 item.setTitle(title);
 
                 JSONArray picture = response.optJSONArray("album");
                 JSONObject images = picture.getJSONObject(i);
-                String image = images.getJSONObject("cover").getJSONObject("photo").getJSONObject("full").getString("url");
-                item.setAlbum_ID(images.getJSONObject("cover").getInt("album_id"));
-                Log.d("cover", images.getJSONObject("cover").getJSONObject("photo").getJSONObject("full").getString("url"));
-                item.setImage("http://openetizen.com" + image.toString());
-                Log.d("foto", image.toString());
+                item.setAlbum_ID(images.getInt("album_id"));
+
+                if(images.get("cover")!=null) {
+                    String image = images.getJSONObject("cover").getJSONObject("photo").getJSONObject("full").getString("url");
+                    Log.d("cover", images.getJSONObject("cover").getJSONObject("photo").getJSONObject("full").getString("url"));
+                    item.setImage("http://openetizen.com" + image.toString());
+                    Log.d("foto", image.toString());
+                }
 
                 mGridData.add(item);
             }

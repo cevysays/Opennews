@@ -93,6 +93,7 @@ public class CategoryOneFragment extends Fragment implements AdapterView.OnItemC
     private void getData(final boolean isRefresh) {
 
         AsyncHttpClient client = new AsyncHttpClient();
+//        client.setTimeout(3000);
         client.get("http://openetizen.com/api/v1/articles", null, new JsonHttpResponseHandler() {
 
             ProgressDialog progress;
