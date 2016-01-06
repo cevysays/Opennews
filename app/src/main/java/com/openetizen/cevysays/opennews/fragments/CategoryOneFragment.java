@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -93,7 +94,7 @@ public class CategoryOneFragment extends Fragment implements AdapterView.OnItemC
     private void getData(final boolean isRefresh) {
 
         AsyncHttpClient client = new AsyncHttpClient();
-//        client.setTimeout(3000);
+        client.setTimeout(30);
         client.get("http://openetizen.com/api/v1/articles", null, new JsonHttpResponseHandler() {
 
             ProgressDialog progress;
@@ -182,6 +183,28 @@ public class CategoryOneFragment extends Fragment implements AdapterView.OnItemC
                 listView.setOnItemClickListener(CategoryOneFragment.this);
                 listView.setAdapter(new CategoryOneAdapter(dataCatOne, getActivity()));
 
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                // Hide Progress Dialog
+
+//                Log.e("errorResponse", errorResponse.toString() + "  " + statusCode);
+
+                // When Http response code is '404'
+                if (statusCode == 404) {
+                    Toast.makeText(getActivity().getApplicationContext(), "Requested resource not found", Toast.LENGTH_LONG).show();
+                }
+                // When Http response code is '500'
+                else if (statusCode == 500) {
+                    Toast.makeText(getActivity().getApplicationContext(), "Something went wrong at server end", Toast.LENGTH_LONG).show();
+                }
+                // When Http response code other than 404, 500
+                else {
+                    Toast.makeText(getActivity().getApplicationContext(), "Gagal memuat data, masalah koneksi internet!", Toast.LENGTH_LONG).show();
+                    // Toast.makeText(getApplicationContext(), "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
+                }
+                super.onFailure(statusCode, headers, throwable, errorResponse);
             }
         });
     }

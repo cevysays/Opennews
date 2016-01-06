@@ -13,9 +13,11 @@ import android.view.WindowManager;
 import android.widget.Button;
 
 import com.openetizen.cevysays.opennews.R;
+import com.openetizen.cevysays.opennews.util.JustifiedTextView;
 
 
 public class AboutActivity extends ActionBarActivity {
+//    private JustifiedTextView about;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +44,10 @@ public class AboutActivity extends ActionBarActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.setStatusBarColor(getResources().getColor(R.color.myPrimaryDarkColor));
         }
+//        about = (JustifiedTextView) findViewById(R.id.cokrodiningratan);
     }
 
-    public void openMap (View view){
+    public void openMap(View view) {
         Intent i = new Intent(this, MapsActivity.class);
         startActivity(i);
     }

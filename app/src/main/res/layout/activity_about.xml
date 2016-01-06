@@ -68,6 +68,14 @@
                     android:paddingRight="20dp"
                     android:paddingTop="20dp">
 
+                    <!--<com.openetizen.cevysays.opennews.util.JustifiedTextView-->
+                        <!--android:id="@+id/cokrodiningratan"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:padding="8dp"-->
+                        <!--android:text="@string/cokrodiningratan"-->
+                        <!--android:textSize="12sp"/>-->
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

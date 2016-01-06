@@ -38,7 +38,7 @@ public class MainActivityUser extends ActionBarActivity
         setSupportActionBar(mToolbar);
 
         //Drawer item
-        ImageView login = (ImageView) findViewById(R.id.login);
+//        ImageView login = (ImageView) findViewById(R.id.login);
 
 
         LinearLayout about = (LinearLayout) findViewById(R.id.about);

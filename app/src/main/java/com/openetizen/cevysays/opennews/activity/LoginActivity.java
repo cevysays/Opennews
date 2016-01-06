@@ -152,11 +152,7 @@ public class LoginActivity extends ActionBarActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-//                params.put("email", email);
-//                // Put Http parameter password with value of Password Edit Value control
-//                params.put("password", password);
-//                // Invoke RESTful Web Service with Http parameters
-                invokeWS(params);
+         invokeWS(params);
             }
             // When Email is invalid
             else {

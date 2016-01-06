@@ -36,6 +36,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.openetizen.cevysays.opennews.R;
 import com.openetizen.cevysays.opennews.models.CategoryOneItem;
+import com.openetizen.cevysays.opennews.util.Utility;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -133,6 +134,7 @@ public class PostingActivity extends ActionBarActivity implements AdapterView.On
 
         if(extras!=null){
             isEdit = true;
+            setTitle("Sunting artikel");
             titleArticle.setText(extras.getString("title"));
             spinner.setSelection(Integer.parseInt(extras.getString("kategori").substring(extras.getString("kategori").length()-1)));
             contentArticle.setText(Html.fromHtml(extras.getString("konten")));
@@ -173,31 +175,38 @@ public class PostingActivity extends ActionBarActivity implements AdapterView.On
         params.put("article[category_cd]", category_cd);
         params.put("article[title]", title);
         params.put("article[content]", content);
-        try {
-            params.put("article[image]", new File(image_url));
-        } catch(FileNotFoundException e) {}
 
-        JSONObject jsonPosting = new JSONObject();
-        try {
-            jsonPosting.put("user_id",sharedPreferences.getInt("loginUserID", 0));
-            jsonPosting.put("category_cd",category_cd);
-            jsonPosting.put("title",title);
-            jsonPosting.put("content",content);
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if (Utility.isNotNull(title) && Utility.isNotNull(content) && Utility.isNotNull(category_cd,this) && Utility.isNotNull(myFile,this)) {
+
+
+            try {
+                params.put("article[image]", new File(image_url));
+            } catch (FileNotFoundException e) {
+            }
+
+            JSONObject jsonPosting = new JSONObject();
+            try {
+                jsonPosting.put("user_id", sharedPreferences.getInt("loginUserID", 0));
+                jsonPosting.put("category_cd", category_cd);
+                jsonPosting.put("title", title);
+                jsonPosting.put("content", content);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            // Invoke RESTful Web Service with Http parameters
+            if (isEdit) {
+                delete(Integer.parseInt(extras.getString("article_id")), jsonPosting);
+            } else {
+                invokeWS(params);
+            }
         }
-
-        // Invoke RESTful Web Service with Http parameters
-        if(isEdit){
-            delete(Integer.parseInt(extras.getString("article_id")),jsonPosting);
-        }else{
-            invokeWS(params);
+        else {
+            Toast.makeText(getApplicationContext(), "Tidak boleh ada data yang kosong!", Toast.LENGTH_LONG).show();
         }
-
-
     }
 
-    private void delete(int article_ID, final JSONObject json) {
+    private void delete(final int article_ID, final JSONObject json) {
 
         prgDialog.show();
 
@@ -220,12 +229,59 @@ public class PostingActivity extends ActionBarActivity implements AdapterView.On
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject jsonObject) {
                 // Hide Progress Dialog
-                prgDialog.hide();
 
                 try {
                     JSONObject obj = new JSONObject(new String(String.valueOf(jsonObject)));
                     Log.d("Opo", String.valueOf(jsonObject));
-                    //invokeWS(json);
+                    String title = titleArticle.getText().toString();
+
+                    // String category = spinnerCat.getCount();
+                    String content = Html.toHtml(SpannableString.valueOf(contentArticle.getText().toString()));
+                    String category_cd = "";
+                    if(spinner.getSelectedItemId()==1){
+                        category_cd = "CATE_TP_1";
+                    }else if(spinner.getSelectedItemId()==2){
+                        category_cd = "CATE_TP_2";
+                    }else if(spinner.getSelectedItemId()==3){
+                        category_cd = "CATE_TP_3";
+                    }
+
+
+                    File myFile = new File(image_url);
+
+                    RequestParams params = new RequestParams();
+                    params.put("article[user_id]", sharedPreferences.getInt("loginUserID", 0));
+                    params.put("article[article_id]", article_ID);
+                    params.put("article[category_cd]", category_cd);
+                    params.put("article[title]", title);
+                    params.put("article[content]", content);
+
+                    if (Utility.isNotNull(title) && Utility.isNotNull(content)) {
+
+
+                        try {
+                            params.put("article[image]", new File(image_url));
+                        } catch (FileNotFoundException e) {
+                        }
+
+                        JSONObject jsonPosting = new JSONObject();
+                        try {
+                            jsonPosting.put("user_id", sharedPreferences.getInt("loginUserID", 0));
+                            jsonPosting.put("article_id", article_id);
+                            jsonPosting.put("category_cd", category_cd);
+                            jsonPosting.put("title", title);
+                            jsonPosting.put("content", content);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+                            invokeWS(params);
+
+                    }
+                    else {
+                        Toast.makeText(getApplicationContext(), "Tidak boleh ada data yang kosong!", Toast.LENGTH_LONG).show();
+                    }
 
 
                 } catch (JSONException e) {
@@ -254,7 +310,7 @@ public class PostingActivity extends ActionBarActivity implements AdapterView.On
                 }
                 // When Http response code other than 404, 500
                 else {
-                    Toast.makeText(getApplicationContext(), "Posting failed", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Gagal mengungah artikel!", Toast.LENGTH_LONG).show();
                     // Toast.makeText(getApplicationContext(), "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
                 }
                 super.onFailure(statusCode, headers, throwable, errorResponse);
@@ -271,7 +327,9 @@ public class PostingActivity extends ActionBarActivity implements AdapterView.On
         StringEntity entity = null;
 
         // Show Progress Dialog
-        prgDialog.show();
+        if(!isEdit) {
+            prgDialog.show();
+        }
 
         AsyncHttpClient client = new AsyncHttpClient();
         client.post("http://openetizen.com/api/v1/articles", params, new AsyncHttpResponseHandler() {
@@ -282,9 +340,15 @@ public class PostingActivity extends ActionBarActivity implements AdapterView.On
 
                         try {
                             JSONObject obj = new JSONObject(new String(responseBody));
+                            Log.v("hasil",new String(responseBody));
                             if (obj.getString("status").equalsIgnoreCase("success")) {
-                                Log.e("result",obj.toString());
-                                Toast.makeText(getApplicationContext(), "Artikel berhasil diunggah!", Toast.LENGTH_LONG).show();
+                                Log.e("result", obj.toString());
+                                if(isEdit){
+                                    Toast.makeText(getApplicationContext(), "Artikel berhasil diubah!", Toast.LENGTH_LONG).show();
+                                }else{
+                                    Toast.makeText(getApplicationContext(), "Artikel berhasil diunggah!", Toast.LENGTH_LONG).show();
+                                }
+
                                 Intent i = new Intent(PostingActivity.this, MainActivity.class);
                                 startActivity(i);
                             } else {
@@ -317,7 +381,7 @@ public class PostingActivity extends ActionBarActivity implements AdapterView.On
                         }
                         // When Http response code other than 404, 500
                         else {
-                            Toast.makeText(getApplicationContext(), "Posting failed", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "Gagal mengungah artikel!", Toast.LENGTH_LONG).show();
                             // Toast.makeText(getApplicationContext(), "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
                         }
                     }
@@ -378,7 +442,7 @@ public class PostingActivity extends ActionBarActivity implements AdapterView.On
                         .decodeFile(imgDecodableString));
 
             } else {
-                Toast.makeText(this, "You haven't picked Image",
+                Toast.makeText(this, "Anda belum memilih foto!",
                         Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {

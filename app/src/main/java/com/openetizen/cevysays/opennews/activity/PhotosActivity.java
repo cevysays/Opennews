@@ -25,6 +25,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.openetizen.cevysays.opennews.R;
 import com.openetizen.cevysays.opennews.adapters.GridViewAdapter;
 import com.openetizen.cevysays.opennews.fragments.GalleryFragment;
+import com.openetizen.cevysays.opennews.fragments.MyGalleryFragment;
 import com.openetizen.cevysays.opennews.models.GridItem;
 
 import org.apache.http.HttpResponse;
@@ -77,7 +78,7 @@ public class PhotosActivity extends AppCompatActivity {
         mGridView.setAdapter(mGridAdapter);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar_actionbar);
-        mToolbar.setTitle(extras.getString("album_Name"));
+        setTitle(extras.getString("album_Name"));
         setSupportActionBar(mToolbar);
 
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -150,6 +151,7 @@ public class PhotosActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent i = new Intent(PhotosActivity.this, UploadPhotoActivity.class);
                 i.putExtra("album_ID", extras.getInt("album_ID"));
+                i.putExtra("album_Name", extras.getString("album_Name"));
                 startActivity(i);
 
             }
@@ -197,7 +199,7 @@ public class PhotosActivity extends AppCompatActivity {
             if (result == 1) {
                 mGridAdapter.setGridData(mGridData);
             } else {
-                Toast.makeText(getBaseContext(), "Failed to fetch data!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getBaseContext(), "Gagal memuat data, cek koneksi internet Anda!", Toast.LENGTH_SHORT).show();
             }
 
             //Hide progressbar
@@ -275,7 +277,7 @@ public class PhotosActivity extends AppCompatActivity {
         }
 
         AsyncHttpClient client = new AsyncHttpClient();
-        client.delete(this, "http://openetizen.com/api/v1/albums/" + extras.getInt("album_ID") + "/photos", entity, "application/json", new JsonHttpResponseHandler() {
+        client.delete(this, "http://openetizen.com/api/v1/albums/" + extras.getInt("album_ID") + "/photos/" + photo_ID, entity, "application/json", new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject jsonObject) {
                 // Hide Progress Dialog
@@ -288,7 +290,7 @@ public class PhotosActivity extends AppCompatActivity {
                     mGridAdapter = new GridViewAdapter(PhotosActivity.this, R.layout.grid_item_layout, mGridData);
                     mGridView.setAdapter(mGridAdapter);
                     //invokeWS(json);
-                    Toast.makeText(getApplicationContext(), "Photo berhasil dihapus!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Foto berhasil dihapus!", Toast.LENGTH_LONG).show();
 
 
                 } catch (JSONException e) {
@@ -317,12 +319,19 @@ public class PhotosActivity extends AppCompatActivity {
                 }
                 // When Http response code other than 404, 500
                 else {
-                    Toast.makeText(getApplicationContext(), "Posting failed", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Gagal menghapus foto!", Toast.LENGTH_LONG).show();
                     // Toast.makeText(getApplicationContext(), "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
                 }
                 super.onFailure(statusCode, headers, throwable, errorResponse);
             }
 
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(PhotosActivity.this, MainActivity.class);
+        intent.putExtra("Fragment","MyGallery");
+        startActivity(intent);
     }
 }

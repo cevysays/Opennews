@@ -69,14 +69,24 @@ public class HistoryFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_history, container, false);
         sharedpreferences = getActivity().getSharedPreferences(MyPREFERENCES,
                 Context.MODE_PRIVATE);
-        loadArray("image", image);
-        loadArray("title", title);
-        loadArray("created_at", created_at);
-        loadArray("username", username);
-        loadArray("category_cd", category_cd);
-        loadArray("content", content);
-        loadArray("article_id", article_id);
-        loadArray("user_id", user_id);
+
+//        image = new ArrayList<String>();
+//        title = new ArrayList<String>();
+//        created_at = new ArrayList<String>();
+//        username = new ArrayList<String>();
+//        content = new ArrayList<String>();
+//        category_cd = new ArrayList<String>();
+//        article_id = new ArrayList<String>();
+//        user_id = new ArrayList<String>();
+
+//        loadArray("image", image);
+//        loadArray("title", title);
+//        loadArray("created_at", created_at);
+//        loadArray("username", username);
+//        loadArray("category_cd", category_cd);
+//        loadArray("content", content);
+//        loadArray("article_id", article_id);
+//        loadArray("user_id", user_id);
 
 
 
@@ -87,11 +97,11 @@ public class HistoryFragment extends Fragment {
         prgDialog.setCancelable(false);
 
 
-        for (int i = 0; i < image.size(); i++) {
-            if (user_id.get(i).equals(String.valueOf(sharedpreferences.getInt("loginUserID", 0)))) {
-                dataCatOne.add(new CategoryOneItem(image.get(i), title.get(i), created_at.get(i), username.get(i), content.get(i), category_cd.get(i), article_id.get(i), user_id.get(i)));
-            }
-        }
+//        for (int i = 0; i < title.size(); i++) {
+//            if (user_id.get(i).equals(String.valueOf(sharedpreferences.getInt("loginUserID", 0)))) {
+//                dataCatOne.add(new CategoryOneItem(image.get(i), title.get(i), created_at.get(i), username.get(i), content.get(i), category_cd.get(i), article_id.get(i), user_id.get(i)));
+//            }
+//        }
 
         mAdapter = new HistoryAdapter(dataCatOne, getActivity());
 
@@ -224,9 +234,33 @@ public class HistoryFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
+        getData();
         return rootView;
 
     }
+
+    private void getData() {
+
+        loadArray("image", image);
+        loadArray("title", title);
+        loadArray("created_at", created_at);
+        loadArray("username", username);
+        loadArray("category_cd", category_cd);
+        loadArray("content", content);
+        loadArray("article_id", article_id);
+        loadArray("user_id", user_id);
+
+
+        for (int i = 0; i < image.size(); i++) {
+            if (user_id.get(i).equals(String.valueOf(sharedpreferences.getInt("loginUserID", 0)))) {
+                dataCatOne.add(new CategoryOneItem(image.get(i), title.get(i), created_at.get(i), username.get(i), content.get(i), category_cd.get(i), article_id.get(i), user_id.get(i)));
+            }
+        }
+
+
+    }
+
 
     private void delete(int article_ID, final int position) {
 
@@ -256,6 +290,7 @@ public class HistoryFragment extends Fragment {
                 try {
                     JSONObject obj = new JSONObject(new String(String.valueOf(jsonObject)));
                     Log.d("Opo", String.valueOf(jsonObject));
+                    Toast.makeText(getActivity().getApplicationContext(), "Artikel berhasil dihapus!", Toast.LENGTH_LONG).show();
 
 
                 } catch (JSONException e) {
@@ -292,7 +327,7 @@ public class HistoryFragment extends Fragment {
                 }
                 // When Http response code other than 404, 500
                 else {
-                    Toast.makeText(getActivity().getApplicationContext(), "Delete failed", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity().getApplicationContext(), "Gagal menghapus artikel!", Toast.LENGTH_LONG).show();
                     // Toast.makeText(getApplicationContext(), "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
                 }
                 super.onFailure(statusCode, headers, throwable, errorResponse);

@@ -58,25 +58,28 @@ public class HistoryAdapter extends BaseAdapter {
                 .getSystemService(Context
                         .LAYOUT_INFLATER_SERVICE);
 
-        convertView = inflater
-                .inflate(R.layout.item_history,
-                        parent, false);
-        holder = new ViewHolder();
-        holder.image = (ImageView) convertView.findViewById(R.id.thumbImage);
-        Picasso.with(context).load("http://openetizen.com" + posts.get(position).getImage()).into(holder.image);
-        holder.title = (TextView) convertView
-                .findViewById(R.id.title);
-        holder.title.setText(posts.get(position).getTitle());
+        if (convertView == null) {
 
-        holder.content = (TextView) convertView
-                .findViewById(R.id.content);
-        holder.content.setText(Html.fromHtml(posts.get(position).getContent()));
+            convertView = inflater
+                    .inflate(R.layout.item_history,
+                            parent, false);
+            holder = new ViewHolder();
+            holder.image = (ImageView) convertView.findViewById(R.id.thumbImage);
+            Picasso.with(context).load("http://openetizen.com" + posts.get(position).getImage()).into(holder.image);
+            holder.title = (TextView) convertView
+                    .findViewById(R.id.title);
+            holder.title.setText(posts.get(position).getTitle());
 
-        holder.created_at = (TextView) convertView
-                .findViewById(R.id.date);
-        holder.created_at.setText(posts.get(position).getCreated_at());
+            holder.content = (TextView) convertView
+                    .findViewById(R.id.content);
+            holder.content.setText(Html.fromHtml(posts.get(position).getContent()));
 
-        convertView.setTag(holder);
+            holder.created_at = (TextView) convertView
+                    .findViewById(R.id.date);
+            holder.created_at.setText(posts.get(position).getCreated_at());
+
+            convertView.setTag(holder);
+        }
 //
         return convertView;
     }

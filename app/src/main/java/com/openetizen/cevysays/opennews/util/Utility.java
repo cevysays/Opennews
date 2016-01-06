@@ -1,5 +1,10 @@
 package com.openetizen.cevysays.opennews.util;
 
+import android.content.Context;
+import android.widget.Spinner;
+import android.widget.Toast;
+
+import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,6 +39,42 @@ public class Utility {
      * @return true for not null and false for null String object
      */
     public static boolean isNotNull(String txt) {
+
         return txt != null && txt.trim().length() > 0 ? true : false;
+
+    }
+
+    /**
+     * Checks for Null String object
+     *
+     * @param spinner
+     * @return true for not null and false for null String object
+     */
+    public static boolean isNotNull(String spinner, Context context) {
+
+        if (spinner != "") {
+            return true;
+        } else {
+            Toast.makeText(context, "Kategori tidak boleh kosong!", Toast.LENGTH_LONG).show();
+            return false;
+        }
+
+    }
+
+    /**
+     * Checks for Null String object
+     *
+     * @param file
+     * @return true for not null and false for null String object
+     */
+    public static boolean isNotNull(File file, Context context) {
+
+        if (file.length() == 0) {
+            // empty or doesn't exist
+            Toast.makeText(context, "Foto tidak boleh kosong!", Toast.LENGTH_LONG).show();
+            return false;
+        } else {
+            return true;
+        }
     }
 }

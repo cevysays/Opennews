@@ -103,7 +103,7 @@ public class MainActivity extends ActionBarActivity
             menu_article.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(menuFragment =="MyGallery") {
+                    if (menuFragment == "MyGallery") {
                         final Dialog dialog = new Dialog(MainActivity.this);
                         dialog.setContentView(R.layout.addgallery_dialog);
                         dialog.setTitle("Buat Album Baru");
@@ -180,7 +180,7 @@ public class MainActivity extends ActionBarActivity
                                 );
                             }
                         });
-                    }else{
+                    } else {
                         Intent i = new Intent(MainActivity.this, PostingActivity.class);
                         startActivity(i);
                     }
@@ -271,7 +271,20 @@ public class MainActivity extends ActionBarActivity
 
 
 //         display the first navigation drawer view on app launch
-        onNavigationDrawerItemSelected(0);
+//        if (bundle != null && bundle.containsKey("Fragment") && bundle.getString("Fragment").equals("MyGallery")) {
+        if (bundle != null) {
+            if (bundle.containsKey("Fragment")) {
+                if (bundle.getString("Fragment").equals("MyGallery")) {
+                    onNavigationDrawerItemSelected(6);
+                    getSupportActionBar().setTitle(R.string.title_my_gallery);
+                }
+            } else {
+                onNavigationDrawerItemSelected(0);
+
+            }
+        }
+
+//        }
 
         //StartFloating Button
 
@@ -311,7 +324,6 @@ public class MainActivity extends ActionBarActivity
 
 
     @Override
-
     public void onNavigationDrawerItemSelected(int position) {
 
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -322,7 +334,7 @@ public class MainActivity extends ActionBarActivity
                 transaction.replace(R.id.container, new CategoryOneFragment());
                 transaction.setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.commit();
-                if(menuFragment=="MyGallery") {
+                if (menuFragment == "MyGallery") {
                     menu_article.setImageResource(R.drawable.ic_create_white_24dp);
                     menuFragment = "";
                 }
@@ -333,7 +345,7 @@ public class MainActivity extends ActionBarActivity
                 transaction.setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.commit();
                 getSupportActionBar().setTitle(R.string.title_news);
-                if(menuFragment=="MyGallery") {
+                if (menuFragment == "MyGallery") {
                     menu_article.setImageResource(R.drawable.ic_create_white_24dp);
                     menuFragment = "";
                 }
@@ -344,7 +356,7 @@ public class MainActivity extends ActionBarActivity
                 transaction.setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.commit();
                 getSupportActionBar().setTitle(R.string.title_agenda);
-                if(menuFragment=="MyGallery") {
+                if (menuFragment == "MyGallery") {
                     menu_article.setImageResource(R.drawable.ic_create_white_24dp);
                     menuFragment = "";
                 }
@@ -355,7 +367,7 @@ public class MainActivity extends ActionBarActivity
                 transaction.setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.commit();
                 getSupportActionBar().setTitle(R.string.title_promotion);
-                if(menuFragment=="MyGallery") {
+                if (menuFragment == "MyGallery") {
                     menu_article.setImageResource(R.drawable.ic_create_white_24dp);
                     menuFragment = "";
                 }
@@ -365,7 +377,7 @@ public class MainActivity extends ActionBarActivity
                 transaction.setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.commit();
                 getSupportActionBar().setTitle(R.string.title_gallery);
-                if(menuFragment=="MyGallery") {
+                if (menuFragment == "MyGallery") {
                     menu_article.setImageResource(R.drawable.ic_create_white_24dp);
                     menuFragment = "";
                 }
@@ -375,7 +387,7 @@ public class MainActivity extends ActionBarActivity
                 transaction.setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.commit();
                 getSupportActionBar().setTitle(R.string.title_history);
-                if(menuFragment=="MyGallery") {
+                if (menuFragment == "MyGallery") {
                     menu_article.setImageResource(R.drawable.ic_create_white_24dp);
                     menuFragment = "";
                 }
@@ -534,22 +546,22 @@ public class MainActivity extends ActionBarActivity
     }*/
 
     public static Bitmap getBitmapFromURL(Context context, String src) {
-        Bitmap myBitmap=null;
+        Bitmap myBitmap = null;
         try {
             URL url = new URL(src);
 
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setDoInput(true);
             connection.connect();
-            if(isNetworkAvailable(context)) {
+            if (isNetworkAvailable(context)) {
                 InputStream input = connection.getInputStream();
                 myBitmap = BitmapFactory.decodeStream(input);
-            }else{
-                myBitmap = BitmapFactory.decodeResource(context.getResources(),R.drawable.icon_opennews);
+            } else {
+                myBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.icon_opennews);
             }
             return myBitmap;
         } catch (IOException e) {
-            myBitmap = BitmapFactory.decodeResource(context.getResources(),R.drawable.icon_opennews);
+            myBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.icon_opennews);
             return myBitmap;
         }
     }

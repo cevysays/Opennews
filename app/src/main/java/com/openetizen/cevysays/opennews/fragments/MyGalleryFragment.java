@@ -1,6 +1,5 @@
 package com.openetizen.cevysays.opennews.fragments;
 
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -12,6 +11,7 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,6 +65,7 @@ public class MyGalleryFragment extends android.support.v4.app.Fragment {
     private String FEED_URL = "http://openetizen.com/api/v1/albums";
     private int albumID;
     int album_ID = 0;
+    private Toolbar toolbar;
     // Progress Dialog Object
     ProgressDialog prgDialog;
 
@@ -89,6 +90,9 @@ public class MyGalleryFragment extends android.support.v4.app.Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_gallery, container, false);
+        toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar_actionbar);
+        toolbar.setTitle("Galeri Saya");
+//        getActivity().setTitle("My Gallery");
         sharedpreferences = getActivity().getSharedPreferences(MyPREFERENCES,
                 Context.MODE_PRIVATE);
 
@@ -96,7 +100,7 @@ public class MyGalleryFragment extends android.support.v4.app.Fragment {
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
         mProgressBar.setVisibility(View.VISIBLE);
 
-        getActivity().setTitle("My Gallery");
+//        getActivity().setTitle("Galeri Saya");
         //Initialize with empty data
         mGridData = new ArrayList<>();
         mGridAdapter = new GridViewAdapter(getActivity(), R.layout.grid_item_layout, mGridData);
@@ -111,6 +115,7 @@ public class MyGalleryFragment extends android.support.v4.app.Fragment {
                 // Do work to refresh the list here.
                 mGridData = new ArrayList<>();
                 new AsyncHttpTask().execute(FEED_URL);
+
             }
         });
 
@@ -161,6 +166,15 @@ public class MyGalleryFragment extends android.support.v4.app.Fragment {
     //Downloading data asynchronously
     public class AsyncHttpTask extends AsyncTask<String, Void, Integer> {
 
+        ProgressDialog progress;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progress = ProgressDialog.show(getActivity(), "",
+                    "Memuat data...", true);
+        }
+
         @Override
         protected Integer doInBackground(String... params) {
             Integer result = 0;
@@ -188,12 +202,12 @@ public class MyGalleryFragment extends android.support.v4.app.Fragment {
         @Override
         protected void onPostExecute(Integer result) {
             // Download complete. Lets update UI
-
+            progress.dismiss();
             if (result == 1) {
                 mWaveSwipeRefreshLayout.setRefreshing(false);
                 mGridAdapter.setGridData(mGridData);
             } else {
-                Toast.makeText(getActivity(), "Failed to fetch data!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Gagal memuat data, cek koneksi internet Anda!", Toast.LENGTH_SHORT).show();
             }
 
             //Hide progressbar
@@ -256,6 +270,7 @@ public class MyGalleryFragment extends android.support.v4.app.Fragment {
 
         mProgressBar.setVisibility(View.VISIBLE);
 
+
         JSONObject jsonPosting = new JSONObject();
         try {
             jsonPosting.put("album_id", album_ID);
@@ -272,6 +287,7 @@ public class MyGalleryFragment extends android.support.v4.app.Fragment {
 
         AsyncHttpClient client = new AsyncHttpClient();
         client.delete(getActivity(), "http://openetizen.com/api/v1/albums/" + album_ID, entity, "application/json", new JsonHttpResponseHandler() {
+
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject jsonObject) {
                 // Hide Progress Dialog

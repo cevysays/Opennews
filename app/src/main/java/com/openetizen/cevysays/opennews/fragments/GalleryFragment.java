@@ -110,13 +110,13 @@ public class GalleryFragment extends Fragment {
 
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                Log.e("album_ID",""+mGridData.get(position).getAlbum_ID());
+                Log.e("album_ID", "" + mGridData.get(position).getAlbum_ID());
                 /*bundle.putInt("album_ID",mGridData.get(position).getAlbum_ID());
                 ((MainActivity) getActivity()).replaceFragments(new PhotosFragment(),bundle);*/
                 Intent i = new Intent(getActivity(), PhotosActivity.class);
-                i.putExtra("album_ID",mGridData.get(position).getAlbum_ID());
-                i.putExtra("album_Name",mGridData.get(position).getTitle());
-                i.putExtra("Fragment","Gallery");
+                i.putExtra("album_ID", mGridData.get(position).getAlbum_ID());
+                i.putExtra("album_Name", mGridData.get(position).getTitle());
+                i.putExtra("Fragment", "Gallery");
                 startActivity(i);
 
             }
@@ -130,6 +130,7 @@ public class GalleryFragment extends Fragment {
     private void getData(final boolean isRefresh) {
 
         AsyncHttpClient client = new AsyncHttpClient();
+        client.setTimeout(30);
         client.get("http://openetizen.com/api/v1/albums", null, new JsonHttpResponseHandler() {
 
             ProgressDialog progress;
@@ -173,7 +174,7 @@ public class GalleryFragment extends Fragment {
 
                         JSONArray picture = response.optJSONArray("album");
                         JSONObject images = picture.getJSONObject(i);
-                        if(images.get("cover")!=JSONObject.NULL) {
+                        if (images.get("cover") != JSONObject.NULL) {
                             String image = images.getJSONObject("cover").getJSONObject("photo").getJSONObject("full").getString("url");
                             item.setImage("http://openetizen.com" + image.toString());
                             Log.d("cover", images.getJSONObject("cover").getJSONObject("photo").getJSONObject("full").getString("url"));
@@ -182,17 +183,37 @@ public class GalleryFragment extends Fragment {
                         item.setAlbum_ID(images.getInt("album_id"));
 
 
-
                         mGridData.add(item);
                     }
                 } catch (JSONException e) {
-                    Log.e("ERROR",e.getMessage());
+                    Log.e("ERROR", e.getMessage());
                 }
 
                 mGridAdapter.setGridData(mGridData);
 
 
+            }
 
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                // Hide Progress Dialog
+
+//                Log.e("errorResponse", errorResponse.toString() + "  " + statusCode);
+
+                // When Http response code is '404'
+                if (statusCode == 404) {
+                    Toast.makeText(getActivity().getApplicationContext(), "Requested resource not found", Toast.LENGTH_LONG).show();
+                }
+                // When Http response code is '500'
+                else if (statusCode == 500) {
+                    Toast.makeText(getActivity().getApplicationContext(), "Something went wrong at server end", Toast.LENGTH_LONG).show();
+                }
+                // When Http response code other than 404, 500
+                else {
+                    Toast.makeText(getActivity().getApplicationContext(), "Gagal memuat data, masalah koneksi internet!", Toast.LENGTH_LONG).show();
+                    // Toast.makeText(getApplicationContext(), "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
+                }
+                super.onFailure(statusCode, headers, throwable, errorResponse);
             }
         });
     }
@@ -232,7 +253,7 @@ public class GalleryFragment extends Fragment {
                 JSONObject images = picture.getJSONObject(i);
                 item.setAlbum_ID(images.getInt("album_id"));
 
-                if(images.get("cover")!=null) {
+                if (images.get("cover") != null) {
                     String image = images.getJSONObject("cover").getJSONObject("photo").getJSONObject("full").getString("url");
                     Log.d("cover", images.getJSONObject("cover").getJSONObject("photo").getJSONObject("full").getString("url"));
                     item.setImage("http://openetizen.com" + image.toString());
@@ -245,8 +266,6 @@ public class GalleryFragment extends Fragment {
             e.printStackTrace();
         }
     }
-
-
 
 
 }
