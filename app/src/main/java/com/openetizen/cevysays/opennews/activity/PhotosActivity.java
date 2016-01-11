@@ -122,7 +122,6 @@ public class PhotosActivity extends AppCompatActivity {
 
         Intent intent = new Intent(PhotosActivity.this, MainActivity.class);
         if (extras.getString("Fragment").equals("MyGallery")) {
-//            getSupportActionBar().setTitle(R.string.title_my_gallery);
             intent.putExtra("Fragment", "MyGallery");
             mGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
@@ -150,8 +149,6 @@ public class PhotosActivity extends AppCompatActivity {
             });
         } else {
             extras.getString("Fragment").equals("Gallery");
-//            getSupportActionBar().setTitle(R.string.title_gallery);
-//            setTitle("Galeri");
             intent.putExtra("Fragment", "Gallery");
         }
 
