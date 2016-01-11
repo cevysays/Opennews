@@ -281,7 +281,7 @@ public class MainActivity extends ActionBarActivity
                     bundle.getString("Fragment").equals("Gallery");
                     onNavigationDrawerItemSelected(4);
                     getSupportActionBar().setTitle(R.string.title_gallery);
-//                    setTitle(R.string.title_gallery);
+                    setTitle("Galeri");
                 }
             } else {
                 onNavigationDrawerItemSelected(0);

@@ -118,6 +118,7 @@
     <string name="title_dialog_delete_album">Apakah anda yakin akan menghapus album ini?</string>
     <string name="title_dialog_delete_photo">Apakah anda yakin akan menghapus foto ini?</string>
     <string name="title_dialog_logout">Apakah anda yakin ingin keluar?</string>
+    <string name="title_dialog_call">Apakah ingin menelepon kantor kelurahan?</string>
     <string name="yes">Iya</string>
     <string name="no">Tidak</string>
     <string name="content_dialog">Login hanya bisa diakses oleh pemilik akun Publisher yang telah terdaftar pada sistem sebelumnya</string>

@@ -390,7 +390,22 @@ public class PostingActivity extends ActionBarActivity implements AdapterView.On
                         }
 
 
-                        invokeWS(params);
+//                        invokeWS(params);
+
+                        if (obj.getString("status").equalsIgnoreCase("success")) {
+                            Log.e("result", obj.toString());
+//                            if (isEdit) {
+                                Toast.makeText(getApplicationContext(), "Artikel berhasil diubah!", Toast.LENGTH_LONG).show();
+//                            } else {
+//                                Toast.makeText(getApplicationContext(), "Artikel berhasil diunggah!", Toast.LENGTH_LONG).show();
+//                            }
+
+                            Intent i = new Intent(PostingActivity.this, MainActivity.class);
+                            startActivity(i);
+                        } else {
+                            errorMsg.setText(obj.getString("error_msg"));
+                            Toast.makeText(getApplicationContext(), obj.getString("error_msg"), Toast.LENGTH_LONG).show();
+                        }
 
 
                     } else {

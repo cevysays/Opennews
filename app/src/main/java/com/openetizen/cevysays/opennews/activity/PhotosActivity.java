@@ -337,7 +337,7 @@ public class PhotosActivity extends AppCompatActivity {
         }else{
             extras.getString("Fragment").equals("Gallery");
             getSupportActionBar().setTitle(R.string.title_gallery);
-            setTitle(R.string.title_gallery);
+            setTitle("Galeri");
             intent.putExtra("Fragment","Gallery");
         }
 //        intent.putExtra("Fragment","MyGallery");

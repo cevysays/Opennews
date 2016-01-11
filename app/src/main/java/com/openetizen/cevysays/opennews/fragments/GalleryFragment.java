@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,6 +63,7 @@ public class GalleryFragment extends Fragment {
     private ArrayList<GridItem> mGridData;
     private String FEED_URL = "http://openetizen.com/api/v1/albums";
     private int albumID;
+    private Toolbar toolbar;
 
     private Bundle bundle = new Bundle();
 
@@ -84,6 +86,8 @@ public class GalleryFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_gallery, container, false);
+        toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar_actionbar);
+        toolbar.setTitle("Galeri");
 
         mGridView = (GridView) rootView.findViewById(R.id.gridView);
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
