@@ -120,30 +120,66 @@ public class PhotosActivity extends AppCompatActivity {
             }
         });
 
-        mGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int i, final long l) {
+        Intent intent = new Intent(PhotosActivity.this, MainActivity.class);
+        if (extras.getString("Fragment").equals("MyGallery")) {
+//            getSupportActionBar().setTitle(R.string.title_my_gallery);
+            intent.putExtra("Fragment", "MyGallery");
+            mGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int i, final long l) {
 
-                AlertDialog.Builder builder =
-                        new AlertDialog.Builder(PhotosActivity.this, R.style.AppCompatAlertDialogStyle);
-                builder.setTitle(R.string.title_dialog_delete_photo);
-                builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        deletePhoto(mGridData.get((int) l).getPhoto_ID(), (int) l);
-                    }
-                });
-                builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                    AlertDialog.Builder builder =
+                            new AlertDialog.Builder(PhotosActivity.this, R.style.AppCompatAlertDialogStyle);
+                    builder.setTitle(R.string.title_dialog_delete_photo);
+                    builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            deletePhoto(mGridData.get((int) l).getPhoto_ID(), (int) l);
+                        }
+                    });
+                    builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
 
-                    }
-                });
-                builder.show();
+                        }
+                    });
+                    builder.show();
 
-                return true;
-            }
-        });
+                    return true;
+                }
+            });
+        } else {
+            extras.getString("Fragment").equals("Gallery");
+//            getSupportActionBar().setTitle(R.string.title_gallery);
+//            setTitle("Galeri");
+            intent.putExtra("Fragment", "Gallery");
+        }
+
+        // Grid long click event
+//        mGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+//            @Override
+//            public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int i, final long l) {
+//
+//                AlertDialog.Builder builder =
+//                        new AlertDialog.Builder(PhotosActivity.this, R.style.AppCompatAlertDialogStyle);
+//                builder.setTitle(R.string.title_dialog_delete_photo);
+//                builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialogInterface, int i) {
+//                        deletePhoto(mGridData.get((int) l).getPhoto_ID(), (int) l);
+//                    }
+//                });
+//                builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialogInterface, int i) {
+//
+//                    }
+//                });
+//                builder.show();
+//
+//                return true;
+//            }
+//        });
 
         menu_upload_photo = (FloatingActionButton) findViewById(R.id.uploadPhoto);
         menu_upload_photo.setOnClickListener(new View.OnClickListener() {
@@ -334,11 +370,11 @@ public class PhotosActivity extends AppCompatActivity {
         if (extras.getString("Fragment").equals("MyGallery")) {
             getSupportActionBar().setTitle(R.string.title_my_gallery);
             intent.putExtra("Fragment", "MyGallery");
-        }else{
+        } else {
             extras.getString("Fragment").equals("Gallery");
             getSupportActionBar().setTitle(R.string.title_gallery);
             setTitle("Galeri");
-            intent.putExtra("Fragment","Gallery");
+            intent.putExtra("Fragment", "Gallery");
         }
 //        intent.putExtra("Fragment","MyGallery");
         startActivity(intent);
