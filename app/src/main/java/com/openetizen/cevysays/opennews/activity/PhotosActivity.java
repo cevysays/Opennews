@@ -331,7 +331,16 @@ public class PhotosActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(PhotosActivity.this, MainActivity.class);
-        intent.putExtra("Fragment","MyGallery");
+        if (extras.getString("Fragment").equals("MyGallery")) {
+            getSupportActionBar().setTitle(R.string.title_my_gallery);
+            intent.putExtra("Fragment", "MyGallery");
+        }else{
+            extras.getString("Fragment").equals("Gallery");
+            getSupportActionBar().setTitle(R.string.title_gallery);
+            setTitle(R.string.title_gallery);
+            intent.putExtra("Fragment","Gallery");
+        }
+//        intent.putExtra("Fragment","MyGallery");
         startActivity(intent);
     }
 }

@@ -41,8 +41,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
+//        LatLng location = new LatLng(-7.779218, 110.368118);
+//        mMap.addMarker(new MarkerOptions().position(location).title("Cokrodiningratan\n"+"Jetis, Daerah Istimewa Yogyakarta, Indonesia"));
+//        mMap.addMarker(new MarkerOptions().position(location).title("Jetis, Daerah Istimewa Yogyakarta, Indonesia"));
+//        mMap.addMarker(new MarkerOptions().position(location).title("Jetis, Daerah Istimewa Yogyakarta, Indonesia"));
+//        mMap.moveCamera(CameraUpdateFactory.newLatLng(location));
+
         LatLng location = new LatLng(-7.779218, 110.368118);
-        mMap.addMarker(new MarkerOptions().position(location).title("Cokrodiningratan, Jetis, Daerah Istimewa Yogyakarta, Indonesia"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(location));
+
+        mMap.setMyLocationEnabled(true);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
+
+        mMap.addMarker(new MarkerOptions()
+                .title("Cokrodiningratan")
+                .snippet("Jetis, Daerah Istimewa Yogyakarta, Indonesia.")
+                .position(location));
     }
 }

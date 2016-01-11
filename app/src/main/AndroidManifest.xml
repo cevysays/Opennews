@@ -24,6 +24,38 @@
     <!-- <uses-permission android:name="android.permission.GET_ACCOUNTS" /> &lt;!&ndash; To auto-complete the email text field in the login form with the user's emails &ndash;&gt; -->
     <!-- <uses-permission android:name="android.permission.READ_PROFILE" /> -->
     <!-- <uses-permission android:name="android.permission.READ_CONTACTS" /> -->
+    <compatible-screens>
+        <!--no small size screens -->
+
+
+        <!--all normal size screens -->
+        <screen android:screenSize="normal" android:screenDensity="ldpi" />
+        <screen android:screenSize="normal" android:screenDensity="mdpi" />
+        <screen android:screenSize="normal" android:screenDensity="hdpi" />
+        <screen android:screenSize="normal" android:screenDensity="xhdpi" />
+
+        <!-- all large size screens -->
+        <screen android:screenSize="large" android:screenDensity="ldpi" />
+        <screen android:screenSize="large" android:screenDensity="mdpi" />
+        <screen android:screenSize="large" android:screenDensity="hdpi" />
+        <screen android:screenSize="large" android:screenDensity="xhdpi" />
+
+        <!-- all xlarge size screens -->
+        <screen android:screenSize="xlarge" android:screenDensity="ldpi" />
+        <screen android:screenSize="xlarge" android:screenDensity="mdpi" />
+        <screen android:screenSize="xlarge" android:screenDensity="hdpi" />
+        <screen android:screenSize="xlarge" android:screenDensity="xhdpi" />
+
+        <!-- Special case for Nexus 7 -->
+        <screen android:screenSize="large" android:screenDensity="213" />
+
+        <!--xxhdpi devices you can use 480 as an int value-->
+        <screen android:screenSize="normal" android:screenDensity="480" />
+        <screen android:screenSize="large" android:screenDensity="480" />
+        <screen android:screenSize="xlarge" android:screenDensity="480" />
+
+    </compatible-screens>
+
     <application
         android:name="android.support.multidex.MultiDexApplication"
         android:allowBackup="true"
@@ -89,7 +121,7 @@
              Note that the API key is linked to the encryption key used to sign the APK.
              You need a different API key for each encryption key, including the release key that is used to
              sign the APK for publishing.
-             You can define the keys for the debug and release targets in src/debug/ and src/release/. 
+             You can define the keys for the debug and release targets in src/debug/ and src/release/.
         -->
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"

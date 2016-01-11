@@ -124,72 +124,75 @@ public class UploadPhotoActivity extends AppCompatActivity {
 //        params.put("photo[description]", photoDesc.getText().toString());
         params.put("photo[description]", Description);
 
-        if (Utility.isNotNull(Description) && Utility.isNotNull(myFile, this)) {
-            prgDialog.show();
+//        if (Utility.isNotNull(Description) && Utility.isNotNull(myFile, this)) {
+        if (Utility.isNotNull(Description)) {
+            if (Utility.isNotNull(myFile, this)) {
+                prgDialog.show();
 
-            try {
-                params.put("photo[photo]", new File(image_url));
+                try {
+                    params.put("photo[photo]", new File(image_url));
 //                params.put("photo[description]", Description);
-            } catch (FileNotFoundException e) {
+                } catch (FileNotFoundException e) {
+                }
+
+
+                AsyncHttpClient client = new AsyncHttpClient();
+                client.post("http://openetizen.com/api/v1/albums/" + extras.getInt("album_ID") + "/photos", params, new AsyncHttpResponseHandler() {
+
+                            @Override
+                            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                                prgDialog.hide();
+                                try {
+                                    JSONObject obj = new JSONObject(new String(responseBody));
+                                    if (obj.getString("status").equalsIgnoreCase("success")) {
+                                        Log.e("result", obj.toString());
+                                        Toast.makeText(getApplicationContext(), "Foto berhasil diunggah!", Toast.LENGTH_LONG).show();
+                                        Intent i = new Intent(UploadPhotoActivity.this, PhotosActivity.class);
+                                        i.putExtra("album_ID", extras.getInt("album_ID"));
+                                        i.putExtra("Fragment", "MyGallery");
+                                        i.putExtra("album_Name", extras.getString("album_Name"));
+                                        startActivity(i);
+                                    } else {
+                                        Toast.makeText(getApplicationContext(), obj.getString("error_msg"), Toast.LENGTH_LONG).show();
+                                    }
+
+                                } catch (JSONException e) {
+                                    // TODO Auto-generated catch block
+                                    Toast.makeText(getApplicationContext(), "Error Occured [Server's JSON response might be invalid]!", Toast.LENGTH_LONG).show();
+                                    e.printStackTrace();
+                                    Log.e("ERROR", "Response");
+
+
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                                Log.e("errorResponse", /*responseBody.toString()*/  "  " + statusCode);
+
+                                prgDialog.hide();
+                                // When Http response code is '404'
+                                if (statusCode == 404) {
+                                    Toast.makeText(getApplicationContext(), "Requested resource not found", Toast.LENGTH_LONG).show();
+                                }
+                                // When Http response code is '500'
+                                else if (statusCode == 500) {
+                                    Toast.makeText(getApplicationContext(), "Something went wrong at server end", Toast.LENGTH_LONG).show();
+                                }
+                                // When Http response code other than 404, 500
+                                else {
+                                    Toast.makeText(getApplicationContext(), "Gagal mengungah artikel!", Toast.LENGTH_LONG).show();
+                                    // Toast.makeText(getApplicationContext(), "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
+                                }
+                            }
+
+                        }
+
+                );
             }
 
-
-            AsyncHttpClient client = new AsyncHttpClient();
-            client.post("http://openetizen.com/api/v1/albums/" + extras.getInt("album_ID") + "/photos", params, new AsyncHttpResponseHandler() {
-
-                        @Override
-                        public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                            prgDialog.hide();
-                            try {
-                                JSONObject obj = new JSONObject(new String(responseBody));
-                                if (obj.getString("status").equalsIgnoreCase("success")) {
-                                    Log.e("result", obj.toString());
-                                    Toast.makeText(getApplicationContext(), "Foto berhasil diunggah!", Toast.LENGTH_LONG).show();
-                                    Intent i = new Intent(UploadPhotoActivity.this, PhotosActivity.class);
-                                    i.putExtra("album_ID", extras.getInt("album_ID"));
-                                    i.putExtra("Fragment", "MyGallery");
-                                    i.putExtra("album_Name", extras.getString("album_Name"));
-                                    startActivity(i);
-                                } else {
-                                    Toast.makeText(getApplicationContext(), obj.getString("error_msg"), Toast.LENGTH_LONG).show();
-                                }
-
-                            } catch (JSONException e) {
-                                // TODO Auto-generated catch block
-                                Toast.makeText(getApplicationContext(), "Error Occured [Server's JSON response might be invalid]!", Toast.LENGTH_LONG).show();
-                                e.printStackTrace();
-                                Log.e("ERROR", "Response");
-
-
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                            Log.e("errorResponse", /*responseBody.toString()*/  "  " + statusCode);
-
-                            prgDialog.hide();
-                            // When Http response code is '404'
-                            if (statusCode == 404) {
-                                Toast.makeText(getApplicationContext(), "Requested resource not found", Toast.LENGTH_LONG).show();
-                            }
-                            // When Http response code is '500'
-                            else if (statusCode == 500) {
-                                Toast.makeText(getApplicationContext(), "Something went wrong at server end", Toast.LENGTH_LONG).show();
-                            }
-                            // When Http response code other than 404, 500
-                            else {
-                                Toast.makeText(getApplicationContext(), "Gagal mengungah artikel!", Toast.LENGTH_LONG).show();
-                                // Toast.makeText(getApplicationContext(), "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
-                            }
-                        }
-
-                    }
-
-            );
-
         } else {
-            Toast.makeText(getApplicationContext(), "Tidak bolah ada data yang kosong!", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Deskripsi foto tidak boleh kosong!", Toast.LENGTH_LONG).show();
         }
     }
 

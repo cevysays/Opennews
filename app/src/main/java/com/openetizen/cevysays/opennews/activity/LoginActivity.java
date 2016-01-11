@@ -89,9 +89,9 @@ public class LoginActivity extends ActionBarActivity {
             @Override
             public void onClick(View view) {
                 Intent email = new Intent(Intent.ACTION_SEND);
-                email.putExtra(Intent.EXTRA_EMAIL, new String[]{"cs@openetizen.com"});
-                email.putExtra(Intent.EXTRA_SUBJECT, "Lupa password");
-                email.putExtra(Intent.EXTRA_TEXT, "tolong kirim ulang kata sandi");
+                email.putExtra(Intent.EXTRA_EMAIL, new String[]{"cevyyufindra@gmail.com"});
+                email.putExtra(Intent.EXTRA_SUBJECT, "[Akun Publisher OpenNews] - Lupa password");
+                email.putExtra(Intent.EXTRA_TEXT, "tolong kirim ulang kata sandi!");
                 email.setType("message/rfc822");
                 startActivity(Intent.createChooser(email, "Pilih aplikasi untuk mengirim email :"));
             }
